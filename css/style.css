@@ -299,5 +299,23 @@ input[type="range"] { width: 100%; accent-color: var(--primary); }
 .settings-body label.check { flex-direction: row; align-items: center; gap: 8px; }
 .settings-body output { font-weight: 400; color: var(--muted); margin-left: 4px; }
 .settings.hidden-on-page { display: none; }
+.settings-head { display: flex; align-items: center; justify-content: space-between; }
+.settings-close {
+  background: none; border: 0; color: var(--muted); font-size: 1.1rem; cursor: pointer;
+  width: 32px; height: 32px; border-radius: 50%; margin: -6px -8px -6px 0;
+}
+.settings-close:hover { background: var(--surface-2); }
+.nav-settings { display: none !important; }
+/* スマホ：浮いているボタンをやめ、メニューから開くボトムシートにする */
+@media (max-width: 760px) {
+  .settings { left: 0; right: 0; bottom: 0; }
+  .settings-toggle { display: none; }
+  .settings-body {
+    position: fixed; left: 12px; right: 12px; bottom: 12px; width: auto;
+    max-height: 72vh; margin: 0;
+  }
+  body:not(.no-settings) .nav-settings { display: block !important; border-top: 1px solid rgba(255,255,255,.15); margin-top: 4px; }
+  main { padding-bottom: 40px; }
+}
 
 .site-footer { text-align: center; color: var(--muted); font-size: .82rem; padding: 20px; }

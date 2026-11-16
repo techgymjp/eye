@@ -29,6 +29,7 @@
       <a href="#illusion" data-nav="illusion" data-i18n="nav.illusion">騙し絵</a>
       <a href="#guide" data-nav="guide" data-i18n="nav.guide">見方ガイド</a>
       <a href="#record" data-nav="record" data-i18n="nav.record">記録</a>
+      <a href="#" class="nav-settings" id="navSettings" data-i18n="set.toggle">⚙ 表示設定</a>
     </nav>
   </header>
 
@@ -299,6 +300,7 @@
   <aside class="settings" id="settings">
     <button class="settings-toggle" id="settingsToggle" aria-expanded="false" data-i18n="set.toggle">⚙ 表示設定</button>
     <div class="settings-body" id="settingsBody" hidden>
+      <div class="settings-head"><b data-i18n="set.title">表示設定</b><button class="settings-close" id="settingsClose" aria-label="閉じる" data-i18n-attr="aria-label:close">✕</button></div>
       <label><span data-i18n="set.mode">見方</span>
         <select id="setMode">
           <option value="parallel" data-i18n="mode.parallel">平行法</option>

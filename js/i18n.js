@@ -92,7 +92,7 @@
     'guide.practice.p': 'Adjust your gaze so the two dots above the image overlap in the middle and look like three. You have succeeded when a “circle” floats up in the center.',
     'rec.h2': 'Training Records', 'rec.14': 'Last 14 days', 'rec.cal': 'Calendar',
     'rec.note': 'Records are saved only in this browser.', 'rec.reset': 'Reset records',
-    'set.toggle': '⚙ Display Settings', 'set.mode': 'Viewing', 'mode.parallel': 'Parallel', 'mode.cross': 'Cross-eyed',
+    'set.toggle': '⚙ Display Settings', 'set.title': 'Display Settings', 'close': 'Close', 'set.mode': 'Viewing', 'mode.parallel': 'Parallel', 'mode.cross': 'Cross-eyed',
     'set.pattern': 'Pattern', 'set.depth': 'Depth', 'set.period': 'Pattern width', 'set.dot': 'Dot size',
     'dot.s': 'Small', 'dot.m': 'Medium', 'dot.l': 'Large', 'set.dots': 'Show guide dots',
     'set.bgm': 'BGM', 'set.bgmVol': 'BGM volume', 'set.sfxVol': 'Sound effects volume', 'set.reset': 'Reset to defaults',

@@ -116,7 +116,9 @@
     document.querySelectorAll('.nav a').forEach(a => a.classList.toggle('active', a.dataset.nav === name));
     $('nav').classList.remove('open');
     $('menuBtn').setAttribute('aria-expanded', 'false');
-    $('settings').classList.toggle('hidden-on-page', name === 'illusion' || name === 'record');
+    const noSettings = name === 'illusion' || name === 'record';
+    $('settings').classList.toggle('hidden-on-page', noSettings);
+    document.body.classList.toggle('no-settings', noSettings);
     current = name;
     if (pageInit[name]) { pageInit[name](); pageInit[name] = null; }
     if (pageEnter[name]) pageEnter[name]();
@@ -188,10 +190,24 @@
     ['setMode', 'setPattern', 'setDot', 'setDots'].forEach(id => $(id).addEventListener('change', changed));
     ['setDepth', 'setPeriod'].forEach(id => $(id).addEventListener('input', changed));
     $('setResetBtn').addEventListener('click', () => { Object.assign(settings, DEFAULTS); sync(); saveSettings(); rerenderCurrent(); });
-    $('settingsToggle').addEventListener('click', () => {
-      const body = $('settingsBody');
-      body.hidden = !body.hidden;
-      $('settingsToggle').setAttribute('aria-expanded', String(!body.hidden));
+    function setPanel(open) {
+      $('settingsBody').hidden = !open;
+      $('settingsToggle').setAttribute('aria-expanded', String(open));
+    }
+    $('settingsToggle').addEventListener('click', () => setPanel($('settingsBody').hidden));
+    $('settingsClose').addEventListener('click', () => setPanel(false));
+    // スマホではメニュー内の「表示設定」から開く
+    $('navSettings').addEventListener('click', (e) => {
+      e.preventDefault();
+      $('nav').classList.remove('open');
+      $('menuBtn').setAttribute('aria-expanded', 'false');
+      setPanel(true);
+    });
+    // パネルの外側をタップしたら閉じる
+    document.addEventListener('pointerdown', (e) => {
+      if ($('settingsBody').hidden) return;
+      if (e.target.closest('#settings') || e.target.closest('#navSettings') || e.target.closest('#menuBtn')) return;
+      setPanel(false);
     });
   })();
 
