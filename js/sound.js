@@ -10,7 +10,9 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } }
   };
 
-  const state = Object.assign({ bgm: false, sfx: true, bgmVol: 0.5, sfxVol: 0.6, track: 'calm' }, store.get('stereo.sound', {}));
+  const state = Object.assign({ bgm: true, sfx: true, bgmVol: 0.5, sfxVol: 0.6, track: 'calm' }, store.get('stereo.sound', {}));
+  // BGMは既定でオン。ユーザーが自分でBGMボタンを操作した場合のみ、その選択を優先する
+  if (!state.bgmSet) state.bgm = true;
   function save() { store.set('stereo.sound', state); }
 
   let ctx = null, master, bgmBus, sfxBus, delay, delayFb, delayWet;
@@ -218,7 +220,7 @@
     play,
     onChange(fn) { listeners.push(fn); },
     setBgm(on) {
-      state.bgm = !!on; save();
+      state.bgm = !!on; state.bgmSet = true; save();
       if (on) startBgm(); else stopBgm();
       notify();
     },
