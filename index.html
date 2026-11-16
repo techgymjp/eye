@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D視力回復 ステレオグラム</title>
+  <meta name="description" content="ステレオグラム（立体視）と騙し絵で、楽しく目のトレーニング。平行法・交差法に対応した無料WEBアプリ。">
+  <meta name="theme-color" content="#1f3a5f">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='20' cy='32' r='14' fill='%233a7bd5'/%3E%3Ccircle cx='44' cy='32' r='14' fill='%23e8433a' fill-opacity='.85'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#home" data-nav="home">
+      <span class="logo" aria-hidden="true"><i></i><i></i></span>
+      <span class="brand-text"><b>3D視力回復</b><small>ステレオグラム</small></span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-label="メニュー" aria-expanded="false">☰</button>
+    <nav class="nav" id="nav">
+      <a href="#home" data-nav="home">ホーム</a>
+      <a href="#gallery" data-nav="gallery">3Dアート</a>
+      <a href="#training" data-nav="training">トレーニング</a>
+      <a href="#focus" data-nav="focus">遠近トレーニング</a>
+      <a href="#illusion" data-nav="illusion">騙し絵</a>
+      <a href="#guide" data-nav="guide">見方ガイド</a>
+      <a href="#record" data-nav="record">記録</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ホーム -->
+    <section class="page" id="page-home">
+      <div class="hero">
+        <canvas id="heroCanvas" class="stereo-canvas" aria-label="ステレオグラムのサンプル"></canvas>
+        <div class="hero-copy">
+          <h1>目のリフレッシュに、<br>ステレオグラムを。</h1>
+          <p>不思議な模様をぼんやり眺めていると、絵が<strong>立体的に浮かび上がる</strong>。<br>
+            毎日数分の「立体視トレーニング」で、パソコンやスマホで凝り固まった目の筋肉をほぐしましょう。</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#training" data-nav="training">トレーニングを始める</a>
+            <a class="btn" href="#guide" data-nav="guide">見方を知る</a>
+          </div>
+        </div>
+      </div>
+      <div class="cards">
+        <a class="card" href="#gallery" data-nav="gallery"><span class="card-ico">🖼️</span><h3>3Dアート</h3><p>3Dアート・立体・図形・文字など80種類以上。パターンや奥行きを自由に変えて楽しめます。</p></a>
+        <a class="card" href="#training" data-nav="training"><span class="card-ico">🎯</span><h3>トレーニング</h3><p>隠れた絵を当てるクイズ形式。見えるまでの時間と正解率を記録します。</p></a>
+        <a class="card" href="#focus" data-nav="focus"><span class="card-ico">🔭</span><h3>遠近トレーニング</h3><p>浮き沈みする立体を目で追い、ピント調節の筋肉をほぐします。</p></a>
+        <a class="card" href="#illusion" data-nav="illusion"><span class="card-ico">🌀</span><h3>騙し絵</h3><p>不可能図形・錯視・残像など、脳がだまされる不思議な絵を種明かし付きで。</p></a>
+      </div>
+      <p class="notice">※ 本アプリは目のリラックス・トレーニングを目的としたもので、医療行為ではなく、視力回復の効果を保証するものではありません。目の痛み・頭痛・気分の悪さを感じたら直ちに中止してください。目の病気がある方は医師にご相談ください。</p>
+    </section>
+
+    <!-- 3Dアート ギャラリー -->
+    <section class="page" id="page-gallery" hidden>
+      <h2>3Dアート ギャラリー</h2>
+      <div class="viewer">
+        <div class="stage" id="galleryStage">
+          <div class="guide-dots" id="galleryDots"><span></span><span></span></div>
+          <canvas id="galleryCanvas" class="stereo-canvas"></canvas>
+          <canvas id="galleryDepth" class="depth-overlay" hidden></canvas>
+          <button class="fs-btn" data-fullscreen="galleryStage" aria-label="全画面">⛶</button>
+        </div>
+        <div class="viewer-bar">
+          <span class="now-title" id="galleryTitle"></span>
+          <div class="bar-actions">
+            <button class="btn small" id="galleryPrev">◀ 前へ</button>
+            <button class="btn small" id="galleryRandom">ランダム</button>
+            <button class="btn small" id="galleryNext">次へ ▶</button>
+            <button class="btn small" id="galleryReveal">答えを見る</button>
+            <button class="btn small" id="galleryRegen">模様を変える</button>
+            <button class="btn small" id="galleryDownload">保存</button>
+          </div>
+        </div>
+      </div>
+      <div class="tabs" id="galleryTabs" role="tablist"></div>
+      <div class="thumbs" id="galleryThumbs"></div>
+      <details class="custom" id="customBox">
+        <summary>文字を入力してオリジナル3Dを作る</summary>
+        <div class="custom-row">
+          <input type="text" id="customText" maxlength="6" placeholder="例：がんばれ / LOVE">
+          <button class="btn small primary" id="customMake">作成</button>
+        </div>
+      </details>
+    </section>
+
+    <!-- トレーニング -->
+    <section class="page" id="page-training" hidden>
+      <h2>立体視トレーニング</h2>
+      <div class="train-setup" id="trainSetup">
+        <p>ステレオグラムに隠れた絵を見つけて、4つの選択肢から答えましょう。見えるまでの時間と正解率が記録されます。</p>
+        <div class="field-grid">
+          <label>時間
+            <select id="trainDuration">
+              <option value="60">1分</option>
+              <option value="180" selected>3分</option>
+              <option value="300">5分</option>
+            </select>
+          </label>
+          <label>出題
+            <select id="trainSet">
+              <option value="shape">図形</option>
+              <option value="number">数字</option>
+              <option value="kana">ひらがな</option>
+              <option value="kanji">漢字</option>
+              <option value="mix" selected>ミックス</option>
+            </select>
+          </label>
+          <label>難易度
+            <select id="trainLevel">
+              <option value="easy">やさしい（奥行き大）</option>
+              <option value="normal" selected>ふつう</option>
+              <option value="hard">むずかしい（奥行き小）</option>
+            </select>
+          </label>
+        </div>
+        <button class="btn primary large" id="trainStart">スタート</button>
+      </div>
+
+      <div class="train-run" id="trainRun" hidden>
+        <div class="train-hud">
+          <span>残り <b id="trainTime">3:00</b></span>
+          <span>問題 <b id="trainCount">1</b></span>
+          <span>正解 <b id="trainScore">0</b></span>
+          <button class="btn small" id="trainQuit">終了</button>
+        </div>
+        <div class="stage" id="trainStage">
+          <div class="guide-dots" id="trainDots"><span></span><span></span></div>
+          <canvas id="trainCanvas" class="stereo-canvas"></canvas>
+          <canvas id="trainDepth" class="depth-overlay" hidden></canvas>
+          <div class="feedback" id="trainFeedback" hidden></div>
+          <button class="fs-btn" data-fullscreen="trainStage" aria-label="全画面">⛶</button>
+        </div>
+        <div class="choices" id="trainChoices"></div>
+        <div class="train-actions">
+          <button class="btn" id="trainSkip">わからない（答えを見る）</button>
+        </div>
+      </div>
+
+      <div class="train-result" id="trainResult" hidden>
+        <h3>おつかれさまでした！</h3>
+        <div class="result-stats" id="trainResultStats"></div>
+        <p class="tip">目を閉じて10秒ほど休みましょう。遠くの景色を眺めるのもおすすめです。</p>
+        <button class="btn primary" id="trainAgain">もう一度</button>
+      </div>
+    </section>
+
+    <!-- 遠近トレーニング -->
+    <section class="page" id="page-focus" hidden>
+      <h2>遠近トレーニング</h2>
+      <p class="lead">立体が見えたら、そのまま視線を外さずに、手前に来たり奥へ行ったりする動きを目で追いましょう。ピント調節をつかさどる筋肉（毛様体筋）のストレッチを意識した動きです。</p>
+      <div class="stage" id="focusStage">
+        <div class="guide-dots" id="focusDots"><span></span><span></span></div>
+        <canvas id="focusCanvas" class="stereo-canvas"></canvas>
+        <button class="fs-btn" data-fullscreen="focusStage" aria-label="全画面">⛶</button>
+      </div>
+      <div class="focus-bar">
+        <label>動き
+          <select id="focusMotion">
+            <option value="pulse">浮き沈み</option>
+            <option value="swing">左右にゆれる</option>
+            <option value="orbit">ぐるぐる回る</option>
+            <option value="breath">呼吸（4秒吸って4秒吐く）</option>
+          </select>
+        </label>
+        <label>物体
+          <select id="focusShape">
+            <option value="heart">ハート</option>
+            <option value="star">星</option>
+            <option value="sphere">球</option>
+            <option value="circle">丸</option>
+            <option value="a-torus">トーラス</option>
+          </select>
+        </label>
+        <label>速さ
+          <input type="range" id="focusSpeed" min="0.3" max="2" step="0.1" value="1">
+        </label>
+        <button class="btn primary" id="focusToggle">スタート</button>
+        <span class="focus-msg" id="focusMsg"></span>
+      </div>
+    </section>
+
+    <!-- 騙し絵 -->
+    <section class="page" id="page-illusion" hidden>
+      <h2>騙し絵・錯視コレクション</h2>
+      <p class="lead">脳は、目に入った情報を「解釈」して見ています。まずは問いかけに答えてから、「種明かし」を押してみましょう。</p>
+      <div class="ill-layout">
+        <div>
+          <div class="stage ill-stage" id="illStage">
+            <canvas id="illCanvas"></canvas>
+            <button class="fs-btn" data-fullscreen="illStage" aria-label="全画面">⛶</button>
+          </div>
+          <div class="viewer-bar">
+            <span class="now-title" id="illTitle"></span>
+            <div class="bar-actions">
+              <button class="btn small" id="illPrev">◀ 前へ</button>
+              <button class="btn small primary" id="illReveal">種明かし</button>
+              <button class="btn small" id="illNext">次へ ▶</button>
+            </div>
+          </div>
+        </div>
+        <aside class="ill-text">
+          <span class="badge" id="illKind"></span>
+          <p class="ill-q" id="illQ"></p>
+          <p class="ill-a" id="illA" hidden></p>
+        </aside>
+      </div>
+      <div class="ill-thumbs" id="illThumbs"></div>
+    </section>
+
+    <!-- 見方ガイド -->
+    <section class="page" id="page-guide" hidden>
+      <h2>ステレオグラムの見方</h2>
+      <div class="guide-grid">
+        <article class="guide-card">
+          <h3>平行法（おすすめ）</h3>
+          <svg viewBox="0 0 240 150" class="eye-diagram" aria-hidden="true">
+            <rect x="20" y="10" width="200" height="22" rx="3" class="d-screen"/>
+            <line x1="85" y1="135" x2="85" y2="10" class="d-ray"/>
+            <line x1="155" y1="135" x2="155" y2="10" class="d-ray"/>
+            <circle cx="85" cy="135" r="11" class="d-eye"/><circle cx="155" cy="135" r="11" class="d-eye"/>
+            <text x="120" y="60" class="d-label">視線は平行（遠くを見る）</text>
+          </svg>
+          <ol>
+            <li>画面から30〜40cmほど離れ、画面の<strong>ずっと向こう側</strong>をぼんやり見つめるようにします。</li>
+            <li>画面に顔を近づけてから、ピントを合わせずにゆっくり離していく方法も効果的です。</li>
+            <li>上の<strong>2つの点が3つに見えたら</strong>成功のサイン。そのまま模様に視線を落とすと、立体が浮かび上がります。</li>
+          </ol>
+        </article>
+        <article class="guide-card">
+          <h3>交差法</h3>
+          <svg viewBox="0 0 240 150" class="eye-diagram" aria-hidden="true">
+            <rect x="20" y="10" width="200" height="22" rx="3" class="d-screen"/>
+            <line x1="85" y1="135" x2="165" y2="10" class="d-ray"/>
+            <line x1="155" y1="135" x2="75" y2="10" class="d-ray"/>
+            <circle cx="85" cy="135" r="11" class="d-eye"/><circle cx="155" cy="135" r="11" class="d-eye"/>
+            <text x="120" y="96" class="d-label">寄り目（手前で交差）</text>
+          </svg>
+          <ol>
+            <li>画面と目の間に指を立て、指先を見つめます。</li>
+            <li>指先にピントを合わせたまま、後ろの<strong>2つの点が3つ</strong>になる位置まで指を前後させます。</li>
+            <li>指をそっと外し、模様を見ます。画面右上の「見方」を<strong>交差法</strong>に切り替えてください。</li>
+          </ol>
+        </article>
+        <article class="guide-card">
+          <h3>上手に見るコツ</h3>
+          <ul>
+            <li>部屋を明るくし、画面の明るさは少し控えめに。</li>
+            <li>全画面表示（⛶ボタン）にすると見やすくなります。</li>
+            <li>見えにくいときは「パターン幅」を小さく、「ドット」を大きくしてみましょう。</li>
+            <li>「答えを見る」で隠れた絵を先に確認すると、見つけやすくなります。</li>
+            <li>一度見えたら、目を動かしても立体はしばらく保てます。</li>
+          </ul>
+        </article>
+        <article class="guide-card">
+          <h3>安全に使うために</h3>
+          <ul>
+            <li>1回のトレーニングは<strong>3〜5分程度</strong>、1日数回までが目安です。</li>
+            <li>20分ごとに、20フィート（約6m）先を20秒眺める「20-20-20ルール」も習慣に。</li>
+            <li>目の疲れ・痛み・頭痛・めまいを感じたら、すぐに中止して休みましょう。</li>
+            <li>斜視・弱視などの治療中の方、お子さまのご利用は医師にご相談ください。</li>
+          </ul>
+        </article>
+      </div>
+      <div class="practice">
+        <h3>練習：2つの点を3つにしよう</h3>
+        <p>下の画像の上にある2つの点が、真ん中で重なって3つに見えるように視線を調整します。中央に「丸」が浮かんだら成功です。</p>
+        <div class="stage" id="practiceStage">
+          <div class="guide-dots" id="practiceDots"><span></span><span></span></div>
+          <canvas id="practiceCanvas" class="stereo-canvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- 記録 -->
+    <section class="page" id="page-record" hidden>
+      <h2>トレーニング記録</h2>
+      <div class="stats" id="recordStats"></div>
+      <h3>最近14日間</h3>
+      <div class="chart" id="recordChart"></div>
+      <h3>カレンダー</h3>
+      <div class="calendar" id="recordCalendar"></div>
+      <p class="muted">記録はこのブラウザ内にのみ保存されます。</p>
+      <button class="btn small" id="recordReset">記録をリセット</button>
+    </section>
+  </main>
+
+  <!-- 設定パネル（ステレオグラム共通） -->
+  <aside class="settings" id="settings">
+    <button class="settings-toggle" id="settingsToggle" aria-expanded="false">⚙ 表示設定</button>
+    <div class="settings-body" id="settingsBody" hidden>
+      <label>見方
+        <select id="setMode">
+          <option value="parallel">平行法</option>
+          <option value="cross">交差法</option>
+        </select>
+      </label>
+      <label>模様
+        <select id="setPattern"></select>
+      </label>
+      <label>奥行きの強さ <output id="outDepth"></output>
+        <input type="range" id="setDepth" min="0.12" max="0.5" step="0.02">
+      </label>
+      <label>パターン幅 <output id="outPeriod"></output>
+        <input type="range" id="setPeriod" min="50" max="160" step="2">
+      </label>
+      <label>ドットの大きさ
+        <select id="setDot">
+          <option value="1">小</option>
+          <option value="2">中</option>
+          <option value="3">大</option>
+        </select>
+      </label>
+      <label class="check"><input type="checkbox" id="setDots"> ガイドの点を表示</label>
+      <button class="btn small" id="setResetBtn">初期設定に戻す</button>
+    </div>
+  </aside>
+
+  <footer class="site-footer">
+    <p>3D視力回復 ステレオグラム — 目にやさしく、毎日少しずつ。</p>
+  </footer>
+
+  <script src="js/stereogram.js"></script>
+  <script src="js/depthmaps.js"></script>
+  <script src="js/illusions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
