@@ -388,6 +388,7 @@
     patternSeed = (patternSeed % 9999) + 1;
     $('trainCount').textContent = train.count;
     $('trainFeedback').hidden = true;
+    $('trainFeedback').textContent = '';
     $('trainDepth').hidden = true;
     rerender.training();
 
