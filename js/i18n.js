@@ -96,7 +96,10 @@
     'set.pattern': 'Pattern', 'set.depth': 'Depth', 'set.period': 'Pattern width', 'set.dot': 'Dot size',
     'dot.s': 'Small', 'dot.m': 'Medium', 'dot.l': 'Large', 'set.dots': 'Show guide dots',
     'set.bgm': 'BGM', 'set.bgmVol': 'BGM volume', 'set.sfxVol': 'Sound effects volume', 'set.reset': 'Reset to defaults',
-    'footer': '3D Eye Training Stereograms — gentle on your eyes, a little every day.'
+    'footer': '3D Eye Training Stereograms — gentle on your eyes, a little every day.',
+    'btn.share': 'Share result', 'btn.home': 'Back to Home',
+    'retry.q': 'Try this one again?', 'retry.watch': 'Watch an ad to retry', 'retry.no': 'Show answer',
+    'legal.privacy': 'Privacy Policy', 'legal.adSettings': 'Ad settings'
   };
 
   // ---------- JSで生成するテキスト ----------
@@ -119,7 +122,12 @@
       'ill.reveal': '種明かし', 'ill.back': '元に戻す',
       'ill.near': '手前', 'ill.far': '奥…のはず',
       'ill.remain': (n) => `あと ${n} 秒`, 'ill.pressReveal': '「種明かし」を押してください',
-      'lang.switch': 'English', 'lang.short': 'EN'
+      'lang.switch': 'English', 'lang.short': 'EN',
+      'url.privacy': 'https://techgym.jp/privacy-policy/',
+      'retry.left': (n) => `（残り${n}回）`, 'res.retries': 'やり直し', 'fb.wrong': '不正解…',
+      'share.text': (c, t, acc, avg, r) => `3D視力回復 ステレオグラムで立体視トレーニング！正解 ${c}/${t}（${acc}%）` + (avg ? `・見えるまで平均 ${avg}秒` : '') + (r ? `・やり直し ${r}回` : ''),
+      'share.title': '3D視力回復 ステレオグラム', 'share.dialog': '結果をシェア',
+      'share.copied': '結果をコピーしました', 'share.copyFail': 'コピーできませんでした'
     },
     en: {
       'bgm.stop': 'Stop BGM', 'bgm.play': 'Play BGM', 'sfx.off': 'Sound effects off', 'sfx.on': 'Sound effects on',
@@ -139,7 +147,12 @@
       'ill.reveal': 'Reveal', 'ill.back': 'Back',
       'ill.near': 'Near', 'ill.far': 'Far…supposedly',
       'ill.remain': (n) => `${n} s left`, 'ill.pressReveal': 'Now press “Reveal”',
-      'lang.switch': '日本語', 'lang.short': 'JA'
+      'lang.switch': '日本語', 'lang.short': 'JA',
+      'url.privacy': 'https://techgym.jp/privacy-policy-en/',
+      'retry.left': (n) => `(${n} left)`, 'res.retries': 'Retries', 'fb.wrong': 'Not quite…',
+      'share.text': (c, t, acc, avg, r) => `Stereo vision training with 3D Eye Training! ${c}/${t} correct (${acc}%)` + (avg ? `, avg. ${avg}s to see` : '') + (r ? `, ${r} retr${r === 1 ? 'y' : 'ies'}` : ''),
+      'share.title': '3D Eye Training Stereograms', 'share.dialog': 'Share result',
+      'share.copied': 'Result copied to clipboard', 'share.copyFail': 'Could not copy'
     }
   };
 

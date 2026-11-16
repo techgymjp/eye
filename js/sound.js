@@ -241,16 +241,36 @@
     },
     /** ユーザー操作後に呼ぶ（自動再生制限への対応） */
     unlock() {
+      if (suspended || document.hidden) return;
       if (!ensure()) return;
+      if (state.bgm && !bgmTimer) startBgm();
+    },
+    /** 全画面広告の表示中など、すべての音を止める */
+    suspend() {
+      suspended = true;
+      if (!ctx) return;
+      if (bgmTimer) stopBgm(0.2);
+      setTimeout(() => { if (suspended && ctx) ctx.suspend(); }, 250);
+    },
+    resume() {
+      suspended = false;
+      if (!ctx || document.hidden) return;
+      ctx.resume();
       if (state.bgm && !bgmTimer) startBgm();
     }
   };
+  let suspended = false;
 
-  // タブが非表示の間はBGMを止める
+  // タブが非表示（アプリが裏に回った）の間は音を止める
   document.addEventListener('visibilitychange', () => {
     if (!ctx) return;
-    if (document.hidden) { if (bgmTimer) stopBgm(0.3); }
-    else if (state.bgm) startBgm();
+    if (document.hidden) {
+      if (bgmTimer) stopBgm(0.2);
+      setTimeout(() => { if (document.hidden && ctx) ctx.suspend(); }, 250);
+    } else if (!suspended) {
+      ctx.resume();
+      if (state.bgm) startBgm();
+    }
   });
 
   global.Sound = Sound;

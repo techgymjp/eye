@@ -319,3 +319,26 @@ input[type="range"] { width: 100%; accent-color: var(--primary); }
 }
 
 .site-footer { text-align: center; color: var(--muted); font-size: .82rem; padding: 20px; }
+
+/* ---- アプリ（広告・シェア・やり直し） ---- */
+.legal { font-size: .8rem; color: var(--muted); text-align: center; margin: 18px 0 8px; }
+.legal #buildInfo:not(:empty)::after { content: '｜'; }
+.result-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.share-msg { margin: 10px 0 0; }
+.retry-offer {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 4;
+  width: min(92%, 360px); background: var(--surface); color: var(--text); border-radius: var(--radius);
+  padding: 16px 18px 14px; box-shadow: 0 10px 30px rgba(0,0,0,.4); text-align: center;
+  display: flex; flex-direction: column; gap: 10px; align-items: stretch;
+}
+.retry-offer p { margin: 0; font-weight: 700; }
+.retry-offer small { font-weight: 400; opacity: .85; }
+.retry-bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.retry-bar i { display: block; height: 100%; width: 100%; background: var(--primary); transform-origin: left; }
+/* バナー広告（画面下 50dp）と中身が重ならないようにする */
+body.ad-banner main { padding-bottom: 90px; }
+body.ad-banner .site-footer { padding-bottom: 70px; }
+body.ad-banner .settings { bottom: 66px; }
+@media (max-width: 760px) {
+  body.ad-banner .settings-body { bottom: 62px; max-height: calc(72vh - 50px); }
+}

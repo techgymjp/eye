@@ -1,0 +1,8 @@
+{
+  "appId": "jp.techgym.eye",
+  "appName": "3D視力回復",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#1f3a5f"
+  }
+}

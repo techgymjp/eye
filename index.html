@@ -54,6 +54,11 @@
         <a class="card" href="#focus" data-nav="focus"><span class="card-ico">🔭</span><h3 data-i18n="card.focus.t">遠近トレーニング</h3><p data-i18n="card.focus.p">浮き沈みする立体を目で追い、ピント調節の筋肉をほぐします。</p></a>
         <a class="card" href="#illusion" data-nav="illusion"><span class="card-ico">🌀</span><h3 data-i18n="card.illusion.t">騙し絵</h3><p data-i18n="card.illusion.p">不可能図形・錯視・残像など、脳がだまされる不思議な絵を種明かし付きで。</p></a>
       </div>
+      <p class="legal">
+        <span id="buildInfo"></span>
+        <a id="privacyLink" href="https://techgym.jp/privacy-policy/" target="_blank" rel="noopener" data-i18n="legal.privacy">プライバシーポリシー</a>
+        <span id="adPrivacy" hidden>｜<a href="#" id="adPrivacyLink" data-i18n="legal.adSettings">広告の設定</a></span>
+      </p>
       <p class="notice" data-i18n="home.notice">※ 本アプリは目のリラックス・トレーニングを目的としたもので、医療行為ではなく、視力回復の効果を保証するものではありません。目の痛み・頭痛・気分の悪さを感じたら直ちに中止してください。目の病気がある方は医師にご相談ください。</p>
     </section>
 
@@ -75,7 +80,9 @@
             <button class="btn small" id="galleryNext" data-i18n="btn.next">次へ ▶</button>
             <button class="btn small" id="galleryReveal" data-sfx="none" data-i18n="btn.reveal">答えを見る</button>
             <button class="btn small" id="galleryRegen" data-i18n="btn.regen">模様を変える</button>
+            <!-- web-only -->
             <button class="btn small" id="galleryDownload" data-i18n="btn.save">保存</button>
+            <!-- /web-only -->
           </div>
         </div>
       </div>
@@ -140,6 +147,12 @@
           <canvas id="trainCanvas" class="stereo-canvas"></canvas>
           <canvas id="trainDepth" class="depth-overlay" hidden></canvas>
           <div class="feedback" id="trainFeedback" hidden></div>
+          <div class="retry-offer" id="retryOffer" hidden>
+            <p data-i18n="retry.q">もう一度挑戦しますか？</p>
+            <button class="btn primary" id="retryWatch"><span data-i18n="retry.watch">広告を見てやり直す</span> <small id="retryLeft"></small></button>
+            <button class="btn small" id="retryNo" data-i18n="retry.no">答えを見る</button>
+            <div class="retry-bar"><i id="retryBar"></i></div>
+          </div>
           <button class="fs-btn" data-fullscreen="trainStage" aria-label="全画面" data-i18n-attr="aria-label:fullscreen;title:fullscreen">⛶</button>
         </div>
         <div class="choices" id="trainChoices"></div>
@@ -152,7 +165,12 @@
         <h3 data-i18n="train.done">おつかれさまでした！</h3>
         <div class="result-stats" id="trainResultStats"></div>
         <p class="tip" data-i18n="train.tip">目を閉じて10秒ほど休みましょう。遠くの景色を眺めるのもおすすめです。</p>
-        <button class="btn primary" id="trainAgain" data-i18n="btn.again">もう一度</button>
+        <div class="result-actions">
+          <button class="btn primary" id="trainAgain" data-i18n="btn.again">もう一度</button>
+          <button class="btn" id="trainShare" data-i18n="btn.share">結果をシェア</button>
+          <button class="btn" id="trainHome" data-i18n="btn.home">ホームに戻る</button>
+        </div>
+        <p class="muted share-msg" id="shareMsg" hidden></p>
       </div>
     </section>
 
@@ -348,6 +366,9 @@
   <script src="js/stereogram.js"></script>
   <script src="js/depthmaps.js"></script>
   <script src="js/illusions.js"></script>
+  <script src="js/ads-config.js"></script>
+  <script src="js/build-info.js"></script>
+  <script src="js/ads.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

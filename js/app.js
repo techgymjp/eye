@@ -5,6 +5,13 @@
   const DM = window.DepthMaps;
   const L = window.I18N;
   const nm = (o) => L.name(o);
+  // Android アプリ（Capacitor）で動いているか。Web 版では Capacitor がないので何もしない
+  const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  const plugin = (name) => (NATIVE && window.Capacitor.Plugins ? window.Capacitor.Plugins[name] : null);
+  const ADS = window.Ads || { available: false, canReward: false, showing: false, privacyOptionsRequired: false,
+    initDone: Promise.resolve(), showInterstitial: () => Promise.resolve(), showRewarded: () => Promise.resolve('unavailable'),
+    setBanner: () => {}, showPrivacyOptions: () => Promise.resolve() };
+  const SHARE_URL = 'https://techgym.jp/column/claude-code-stereogram/';
   const ST = window.Stereo;
 
   // ---------------- 保存ユーティリティ ----------------
@@ -111,6 +118,10 @@
 
   function go(name) {
     if (!PAGES.includes(name)) name = 'home';
+    // 見方ガイド（操作説明）やトレーニング結果画面からホームに戻るときは全画面広告を出す
+    if (name === 'home' && current && (current === 'guide' || (current === 'training' && !$('trainResult').hidden))) {
+      ADS.showInterstitial(1500);
+    }
     if (current && pageLeave[current]) pageLeave[current]();
     PAGES.forEach(p => { $('page-' + p).hidden = p !== name; });
     document.querySelectorAll('.nav a').forEach(a => a.classList.toggle('active', a.dataset.nav === name));
@@ -123,6 +134,14 @@
     if (pageInit[name]) { pageInit[name](); pageInit[name] = null; }
     if (pageEnter[name]) pageEnter[name]();
     window.scrollTo(0, 0);
+    updateBanner();
+  }
+
+  // バナー広告：ステレオグラムを見る画面（ギャラリー・トレーニング中・遠近・騙し絵）では出さない
+  function updateBanner() {
+    const want = current === 'home' || current === 'guide' || current === 'record' ||
+      (current === 'training' && !train.running);
+    ADS.setBanner(want);
   }
   window.addEventListener('hashchange', () => go(location.hash.slice(1)));
   $('menuBtn').addEventListener('click', () => {
@@ -351,7 +370,7 @@
       }
       rerender.gallery();
     });
-    $('galleryDownload').addEventListener('click', () => {
+    if ($('galleryDownload')) $('galleryDownload').addEventListener('click', () => {
       const c = $('galleryCanvas');
       const a = document.createElement('a');
       a.download = 'stereogram-' + nm(galleryShape()) + '.png';
@@ -430,18 +449,26 @@
     do { shape = pool[Math.floor(Math.random() * pool.length)]; } while (train.last && shape.id === train.last.id && pool.length > 1);
     train.last = shape;
     train.shape = shape;
-    train.qStart = performance.now();
-    train.answered = false;
     train.count++;
     patternSeed = (patternSeed % 9999) + 1;
+    train.seed = patternSeed;
     $('trainCount').textContent = train.count;
+    const same = DM.CATEGORIES.find(c => c.id === shape.cat).items.filter(s => s.id !== shape.id);
+    train.opts = shuffle([shape].concat(shuffle(same.slice()).slice(0, 3)));
+    showQuestion();
+  }
+
+  // 現在の問題を表示する（やり直しのときは同じ模様・同じ選択肢の並びで再現する）
+  function showQuestion() {
+    const opts = train.opts;
+    train.qStart = performance.now();
+    train.answered = false;
+    patternSeed = train.seed;
     $('trainFeedback').hidden = true;
     $('trainFeedback').textContent = '';
     $('trainDepth').hidden = true;
+    $('retryOffer').hidden = true;
     rerender.training();
-
-    const same = DM.CATEGORIES.find(c => c.id === shape.cat).items.filter(s => s.id !== shape.id);
-    const opts = shuffle([shape].concat(shuffle(same.slice()).slice(0, 3)));
     const box = $('trainChoices');
     box.innerHTML = '';
     opts.forEach(o => {
@@ -452,27 +479,94 @@
     });
   }
 
+  const RETRY_MAX = 5;          // 1 回のトレーニングで広告を見てやり直せる回数
+  const RETRY_DELAY = 2500;     // 不正解のあと、やり直しの案内を出すまでの時間
+  const RETRY_WAIT = 6000;      // 案内を出しておく時間（過ぎたら答えを見せて次へ）
+
   function answer(choice, btn) {
-    if (train.answered) return;
+    if (train.answered || !train.running) return;
     train.answered = true;
     const ok = choice && choice.id === train.shape.id;
     const secs = (performance.now() - train.qStart) / 1000;
     train.total++;
     if (ok) { train.correct++; train.times.push(secs); }
     $('trainScore').textContent = train.correct;
-    $('trainChoices').querySelectorAll('button').forEach(b => {
-      b.disabled = true;
-      if (b.dataset.id === train.shape.id) b.classList.add('correct');
-    });
+    $('trainChoices').querySelectorAll('button').forEach(b => { b.disabled = true; });
     if (btn && !ok) btn.classList.add('wrong');
     SND.play(ok ? 'correct' : 'wrong');
     const fb = $('trainFeedback');
     fb.className = 'feedback ' + (ok ? 'good' : 'bad');
+    fb.hidden = false;
+    clearTimeout(train.nextTimer);
+    // 選んで外したときだけ、広告を見て同じ問題をやり直せる（アプリ版・回数制限つき）
+    if (!ok && choice && ADS.canReward && train.retries < RETRY_MAX) {
+      fb.textContent = L.t('fb.wrong');
+      train.nextTimer = setTimeout(offerRetry, RETRY_DELAY);
+      return;
+    }
+    revealAnswer(ok, secs);
+  }
+
+  function revealAnswer(ok, secs) {
+    $('trainChoices').querySelectorAll('button').forEach(b => {
+      if (b.dataset.id === train.shape.id) b.classList.add('correct');
+    });
+    const fb = $('trainFeedback');
     fb.textContent = ok ? L.t('fb.ok', secs.toFixed(1)) : L.t('fb.ng', nm(train.shape));
     fb.hidden = false;
     showDepthOverlay($('trainDepth'), train.shape, $('trainCanvas'), !ok);
     clearTimeout(train.nextTimer);
     train.nextTimer = setTimeout(() => { if (train.running) nextQuestion(); }, ok ? 1300 : 2600);
+  }
+
+  // やり直しの案内（数秒で自動的に消えて先へ進む）。案内中と広告の間はタイマーを止める
+  function offerRetry() {
+    if (!train.running) return;
+    pauseTimer();
+    $('trainFeedback').hidden = true;
+    $('retryLeft').textContent = L.t('retry.left', RETRY_MAX - train.retries);
+    $('retryOffer').hidden = false;
+    const bar = $('retryBar');
+    bar.style.transition = 'none'; bar.style.transform = 'scaleX(1)';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      bar.style.transition = `transform ${RETRY_WAIT}ms linear`; bar.style.transform = 'scaleX(0)';
+    }));
+    train.offerTimer = setTimeout(declineRetry, RETRY_WAIT);
+  }
+  function declineRetry() {
+    clearTimeout(train.offerTimer);
+    if ($('retryOffer').hidden) return;
+    $('retryOffer').hidden = true;
+    resumeTimer();
+    if (train.running) revealAnswer(false, 0);
+  }
+  async function acceptRetry() {
+    clearTimeout(train.offerTimer);
+    if ($('retryOffer').hidden) return;
+    $('retryOffer').hidden = true;
+    const result = await ADS.showRewarded();
+    if (!train.running) return;
+    resumeTimer();
+    if (result === 'rewarded') {
+      // そのプレーの成績を取り消し、同じ問題を同じ模様・同じ並びで出し直す
+      train.total--;
+      train.retries++;
+      showQuestion();
+    } else {
+      revealAnswer(false, 0);
+    }
+  }
+
+  // タイマー（広告や案内の間、アプリが裏に回っている間は止める）
+  function elapsedSec() {
+    const now = train.pausedAt || performance.now();
+    return (now - train.started - train.pausedTotal) / 1000;
+  }
+  function pauseTimer() { if (train.running && !train.pausedAt) train.pausedAt = performance.now(); }
+  function resumeTimer() {
+    if (!train.pausedAt) return;
+    train.pausedTotal += performance.now() - train.pausedAt;
+    train.pausedAt = 0;
   }
 
   rerender.training = () => {
@@ -484,17 +578,19 @@
 
   function startTraining() {
     Object.assign(train, {
-      running: true, count: 0, correct: 0, total: 0, times: [], last: null,
+      running: true, count: 0, correct: 0, total: 0, times: [], last: null, retries: 0, pausedAt: 0, pausedTotal: 0,
       set: $('trainSet').value, mu: MU_LEVEL[$('trainLevel').value],
       duration: parseInt($('trainDuration').value, 10), started: performance.now()
     });
     $('trainSetup').hidden = true; $('trainResult').hidden = true; $('trainRun').hidden = false;
+    $('shareMsg').hidden = true;
     $('trainScore').textContent = '0';
+    updateBanner();
     SND.play('start');
     nextQuestion();
     clearInterval(train.timer);
     const tick = () => {
-      const left = train.duration - (performance.now() - train.started) / 1000;
+      const left = train.duration - elapsedSec();
       $('trainTime').textContent = fmt(left);
       if (left <= 0) finishTraining();
     };
@@ -504,9 +600,11 @@
 
   function finishTraining(aborted) {
     if (!train.running) return;
+    const elapsed = Math.min(train.duration, elapsedSec());
     train.running = false;
-    clearInterval(train.timer); clearTimeout(train.nextTimer);
-    const elapsed = Math.min(train.duration, (performance.now() - train.started) / 1000);
+    clearInterval(train.timer); clearTimeout(train.nextTimer); clearTimeout(train.offerTimer);
+    $('retryOffer').hidden = true;
+    updateBanner();
     if (elapsed >= 10) addRecord(elapsed, train.total, train.correct, train.times);
     if (aborted && elapsed < 10) { resetTrainingUI(); return; }
     $('trainRun').hidden = true; $('trainResult').hidden = false;
@@ -518,17 +616,64 @@
       [L.t('res.score'), `${train.correct} / ${train.total}`],
       [L.t('res.acc'), acc + '%'],
       [L.t('res.avg'), avg ? L.t('sec', avg.toFixed(1)) : '—']
-    ].map(([k, v]) => `<div class="stat"><b>${v}</b><span>${k}</span></div>`).join('');
+    ].concat(train.retries ? [[L.t('res.retries'), L.t('times', train.retries)]] : [])
+      .map(([k, v]) => `<div class="stat"><b>${v}</b><span>${k}</span></div>`).join('');
+    train.result = { c: train.correct, t: train.total, acc, avg: avg ? avg.toFixed(1) : '', r: train.retries };
+  }
+
+  // 結果のシェア（アプリでは Android の共有メニュー、Web では共有シート、なければコピー）
+  async function shareResult() {
+    const r = train.result;
+    if (!r) return;
+    const text = L.t('share.text', r.c, r.t, r.acc, r.avg, r.r);
+    const msg = $('shareMsg');
+    const nativeShare = plugin('Share');
+    if (nativeShare) {
+      try { await nativeShare.share({ title: L.t('share.title'), text, url: SHARE_URL, dialogTitle: L.t('share.dialog') }); } catch (e) { /* キャンセル */ }
+      return;
+    }
+    if (navigator.share) {
+      try { await navigator.share({ title: L.t('share.title'), text, url: SHARE_URL }); return; } catch (e) {
+        if (e && e.name === 'AbortError') return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(text + ' ' + SHARE_URL);
+      msg.textContent = L.t('share.copied');
+    } catch (e) {
+      msg.textContent = L.t('share.copyFail');
+    }
+    msg.hidden = false;
   }
   function resetTrainingUI() {
     $('trainSetup').hidden = false; $('trainRun').hidden = true; $('trainResult').hidden = true;
+    updateBanner();
   }
+  // アプリが裏に回ったらトレーニングのタイマーを止める
+  document.addEventListener('visibilitychange', () => {
+    if (!train.running) return;
+    if (document.hidden) pauseTimer();
+    else if ($('retryOffer').hidden && !ADS.showing) resumeTimer();
+  });
 
   pageInit.training = () => {
-    $('trainStart').addEventListener('click', startTraining);
+    // トレーニングを始めるとき・結果画面から「もう一度」のときは全画面広告を出してから始める
+    const startWithAd = async () => {
+      if (train.starting) return;
+      train.starting = true;
+      ADS.setBanner(false);              // 始めたらバナーは出さないので、先に隠しておく
+      await ADS.showInterstitial(3000);
+      train.starting = false;
+      if (current === 'training') startTraining();
+    };
+    $('trainStart').addEventListener('click', startWithAd);
+    $('trainAgain').addEventListener('click', startWithAd);
+    $('trainHome').addEventListener('click', () => { location.hash = '#home'; });
+    $('trainShare').addEventListener('click', shareResult);
     $('trainQuit').addEventListener('click', () => finishTraining(true));
     $('trainSkip').addEventListener('click', () => answer(null, null));
-    $('trainAgain').addEventListener('click', resetTrainingUI);
+    $('retryWatch').addEventListener('click', acceptRetry);
+    $('retryNo').addEventListener('click', declineRetry);
   };
   pageLeave.training = () => { if (train.running) finishTraining(true); resetTrainingUI(); };
 
@@ -673,7 +818,14 @@
     renderStereo($('focusCanvas'), DM.byId[$('focusShape').value], { region: 0.42, ratio: 0.55, seed: 77 });
   };
   pageInit.focus = () => {
-    $('focusToggle').addEventListener('click', () => focus.running ? focusStop() : focusStart());
+    $('focusToggle').addEventListener('click', async () => {
+      if (focus.running) { focusStop(); return; }
+      if (focus.starting) return;
+      focus.starting = true;
+      await ADS.showInterstitial(3000);   // 遠近トレーニングを始めるときは全画面広告
+      focus.starting = false;
+      if (current === 'focus') focusStart();
+    });
     $('focusShape').addEventListener('change', rerender.focus);
   };
   pageEnter.focus = () => requestAnimationFrame(rerender.focus);
@@ -746,6 +898,29 @@
   // ---------------- 見方ガイド ----------------
   rerender.guide = () => renderStereo($('practiceCanvas'), DM.byId.circle, { ratio: 0.45, mu: 0.4, seed: 5 });
   pageEnter.guide = () => requestAnimationFrame(rerender.guide);
+
+  // ---------------- アプリ（Android）向け ----------------
+  // ホームにバージョン・プライバシーポリシー・広告の設定（EU など同意が必要な地域のみ）
+  if (window.APP_VERSION && window.APP_VERSION !== 'dev') $('buildInfo').textContent = window.APP_VERSION;
+  $('privacyLink').href = L.t('url.privacy');
+  ADS.initDone.then(() => { if (ADS.privacyOptionsRequired) $('adPrivacy').hidden = false; });
+  $('adPrivacyLink').addEventListener('click', (e) => { e.preventDefault(); ADS.showPrivacyOptions(); });
+
+  // Android の戻るボタン：開いているものを閉じる → トレーニング中なら終了して結果へ → ホームへ → アプリ終了
+  if (plugin('App')) {
+    plugin('App').addListener('backButton', () => {
+      if (ADS.showing) return;
+      if (!$('settingsBody').hidden) { $('settingsBody').hidden = true; return; }
+      if ($('nav').classList.contains('open')) { $('nav').classList.remove('open'); return; }
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+      if (fsEl) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+      if (!$('retryOffer').hidden) { declineRetry(); return; }
+      if (train.running) { finishTraining(true); return; }
+      if (focus.running) { focusStop(); return; }
+      if (current !== 'home') { location.hash = '#home'; return; }
+      plugin('App').exitApp();
+    });
+  }
 
   // ---------------- 言語切り替え ----------------
   $('langLabel').textContent = L.t('lang.switch');
