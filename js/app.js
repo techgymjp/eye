@@ -193,6 +193,45 @@
     });
   })();
 
+  // ---------------- サウンド ----------------
+  const SND = window.Sound;
+  (function initSound() {
+    const sel = $('setTrack');
+    Object.keys(SND.TRACKS).forEach(k => {
+      const o = document.createElement('option'); o.value = k; o.textContent = SND.TRACKS[k].name; sel.appendChild(o);
+    });
+    function sync(st) {
+      $('bgmBtn').setAttribute('aria-pressed', String(st.bgm));
+      $('sfxBtn').setAttribute('aria-pressed', String(st.sfx));
+      $('bgmBtn').title = st.bgm ? 'BGMを止める' : 'BGMを流す';
+      $('sfxBtn').title = st.sfx ? '効果音をオフ' : '効果音をオン';
+      $('sfxBtn').firstChild.textContent = st.sfx ? '🔊' : '🔇';
+      sel.value = st.track;
+      $('setBgmVol').value = st.bgmVol;
+      $('setSfxVol').value = st.sfxVol;
+    }
+    sync(SND.state);
+    SND.onChange(sync);
+    $('bgmBtn').addEventListener('click', () => { SND.setBgm(!SND.state.bgm); SND.play('toggle'); });
+    $('sfxBtn').addEventListener('click', () => { SND.setSfx(!SND.state.sfx); SND.play('toggle'); });
+    sel.addEventListener('change', () => SND.setTrack(sel.value));
+    $('setBgmVol').addEventListener('input', (e) => SND.setBgmVol(parseFloat(e.target.value)));
+    $('setSfxVol').addEventListener('input', (e) => SND.setSfxVol(parseFloat(e.target.value)));
+    $('setSfxVol').addEventListener('change', () => SND.play('click'));
+
+    // 自動再生制限：最初のユーザー操作で音声を有効化
+    const unlock = () => { SND.unlock(); };
+    ['pointerdown', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, unlock, { passive: true }));
+
+    // ボタン共通のクリック音（個別の音を持つボタンは data-sfx で指定）
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('button, .btn, .card, .nav a, .brand, select');
+      if (!el || el.matches('select') || el.id === 'bgmBtn' || el.id === 'sfxBtn') return;
+      if (el.dataset.sfx === 'none') return;
+      SND.play(el.dataset.sfx || (el.matches('.nav a, .card, .brand, a.btn') ? 'nav' : 'click'));
+    });
+  })();
+
   // ---------------- ホーム ----------------
   rerender.home = () => renderStereo($('heroCanvas'), DM.byId['a-hearts'], { ratio: 0.62 });
   pageEnter.home = () => requestAnimationFrame(rerender.home);
@@ -284,7 +323,7 @@
       gallery.index = Math.floor(Math.random() * c.items.length);
       gallery.reveal = false; rerender.gallery();
     });
-    $('galleryReveal').addEventListener('click', () => { gallery.reveal = !gallery.reveal; rerender.gallery(); });
+    $('galleryReveal').addEventListener('click', () => { gallery.reveal = !gallery.reveal; if (gallery.reveal) SND.play('reveal'); rerender.gallery(); });
     $('galleryRegen').addEventListener('click', () => {
       patternSeed = (patternSeed % 9999) + 1;
       const keys = Object.keys(ST.PATTERNS);
@@ -358,7 +397,7 @@
     box.innerHTML = '';
     opts.forEach(o => {
       const b = document.createElement('button');
-      b.type = 'button'; b.textContent = o.name; b.dataset.id = o.id;
+      b.type = 'button'; b.textContent = o.name; b.dataset.id = o.id; b.dataset.sfx = 'none';
       b.addEventListener('click', () => answer(o, b));
       box.appendChild(b);
     });
@@ -377,6 +416,7 @@
       if (b.dataset.id === train.shape.id) b.classList.add('correct');
     });
     if (btn && !ok) btn.classList.add('wrong');
+    SND.play(ok ? 'correct' : 'wrong');
     const fb = $('trainFeedback');
     fb.className = 'feedback ' + (ok ? 'good' : 'bad');
     fb.textContent = ok ? `正解！ ${secs.toFixed(1)}秒` : `答えは「${train.shape.name}」`;
@@ -401,6 +441,7 @@
     });
     $('trainSetup').hidden = true; $('trainResult').hidden = true; $('trainRun').hidden = false;
     $('trainScore').textContent = '0';
+    SND.play('start');
     nextQuestion();
     clearInterval(train.timer);
     const tick = () => {
@@ -420,6 +461,7 @@
     if (elapsed >= 10) addRecord(elapsed, train.total, train.correct, train.times);
     if (aborted && elapsed < 10) { resetTrainingUI(); return; }
     $('trainRun').hidden = true; $('trainResult').hidden = false;
+    SND.play('finish');
     const avg = train.times.length ? (train.times.reduce((a, b) => a + b, 0) / train.times.length) : null;
     const acc = train.total ? Math.round(train.correct / train.total * 100) : 0;
     $('trainResultStats').innerHTML = [
@@ -546,6 +588,7 @@
       const p = inhale ? cyc / 4 : 1 - (cyc - 4) / 4;
       amp = 0.1 + 0.9 * (0.5 - 0.5 * Math.cos(p * Math.PI));
       msg = inhale ? '吸って… ' + (4 - Math.floor(cyc)) : '吐いて… ' + (8 - Math.floor(cyc));
+      if (focus.phase !== inhale) { focus.phase = inhale; SND.play(inhale ? 'breathIn' : 'breathOut'); }
     }
     const w = d.w, h = d.h;
     for (let y = 0; y < h; y++) {
@@ -567,7 +610,7 @@
     }
   }
   function focusStart() {
-    focus.running = true; focus.t0 = performance.now(); focus.last = 0; focus.logged = performance.now();
+    focus.running = true; focus.phase = null; focus.t0 = performance.now(); focus.last = 0; focus.logged = performance.now();
     $('focusToggle').textContent = 'ストップ';
     focus.raf = requestAnimationFrame(focusFrame);
   }
@@ -642,6 +685,7 @@
     $('illNext').addEventListener('click', () => illShow(ill.index + 1));
     $('illReveal').addEventListener('click', () => {
       ill.reveal = !ill.reveal;
+      if (ill.reveal) SND.play('reveal');
       $('illA').hidden = !ill.reveal;
       $('illReveal').textContent = ill.reveal ? '元に戻す' : '種明かし';
       illDraw();

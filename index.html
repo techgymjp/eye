@@ -15,6 +15,10 @@
       <span class="logo" aria-hidden="true"><i></i><i></i></span>
       <span class="brand-text"><b>3D視力回復</b><small>ステレオグラム</small></span>
     </a>
+    <div class="sound-ctrl">
+      <button class="snd-btn" id="bgmBtn" aria-pressed="false" title="BGM">♪<span>BGM</span></button>
+      <button class="snd-btn" id="sfxBtn" aria-pressed="true" title="効果音">🔊<span>効果音</span></button>
+    </div>
     <button class="menu-btn" id="menuBtn" aria-label="メニュー" aria-expanded="false">☰</button>
     <nav class="nav" id="nav">
       <a href="#home" data-nav="home">ホーム</a>
@@ -67,7 +71,7 @@
             <button class="btn small" id="galleryPrev">◀ 前へ</button>
             <button class="btn small" id="galleryRandom">ランダム</button>
             <button class="btn small" id="galleryNext">次へ ▶</button>
-            <button class="btn small" id="galleryReveal">答えを見る</button>
+            <button class="btn small" id="galleryReveal" data-sfx="none">答えを見る</button>
             <button class="btn small" id="galleryRegen">模様を変える</button>
             <button class="btn small" id="galleryDownload">保存</button>
           </div>
@@ -114,7 +118,7 @@
             </select>
           </label>
         </div>
-        <button class="btn primary large" id="trainStart">スタート</button>
+        <button class="btn primary large" id="trainStart" data-sfx="none">スタート</button>
       </div>
 
       <div class="train-run" id="trainRun" hidden>
@@ -133,7 +137,7 @@
         </div>
         <div class="choices" id="trainChoices"></div>
         <div class="train-actions">
-          <button class="btn" id="trainSkip">わからない（答えを見る）</button>
+          <button class="btn" id="trainSkip" data-sfx="none">わからない（答えを見る）</button>
         </div>
       </div>
 
@@ -194,7 +198,7 @@
             <span class="now-title" id="illTitle"></span>
             <div class="bar-actions">
               <button class="btn small" id="illPrev">◀ 前へ</button>
-              <button class="btn small primary" id="illReveal">種明かし</button>
+              <button class="btn small primary" id="illReveal" data-sfx="none">種明かし</button>
               <button class="btn small" id="illNext">次へ ▶</button>
             </div>
           </div>
@@ -312,6 +316,16 @@
         </select>
       </label>
       <label class="check"><input type="checkbox" id="setDots"> ガイドの点を表示</label>
+      <hr>
+      <label>BGM
+        <select id="setTrack"></select>
+      </label>
+      <label>BGMの音量
+        <input type="range" id="setBgmVol" min="0" max="1" step="0.05">
+      </label>
+      <label>効果音の音量
+        <input type="range" id="setSfxVol" min="0" max="1" step="0.05">
+      </label>
       <button class="btn small" id="setResetBtn">初期設定に戻す</button>
     </div>
   </aside>
@@ -320,6 +334,7 @@
     <p>3D視力回復 ステレオグラム — 目にやさしく、毎日少しずつ。</p>
   </footer>
 
+  <script src="js/sound.js"></script>
   <script src="js/stereogram.js"></script>
   <script src="js/depthmaps.js"></script>
   <script src="js/illusions.js"></script>

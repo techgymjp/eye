@@ -66,10 +66,21 @@ h3 { font-size: 1.1rem; margin: 1.2rem 0 .5rem; }
 }
 .nav a:hover { background: rgba(255,255,255,.1); }
 .nav a.active { background: #fff; color: var(--header); font-weight: 700; }
+.sound-ctrl { display: flex; gap: 6px; order: 3; }
+.snd-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.25);
+  border-radius: 999px; padding: 4px 10px; font: inherit; font-size: .8rem; cursor: pointer; opacity: .55;
+}
+.snd-btn[aria-pressed="true"] { opacity: 1; background: rgba(255,255,255,.2); border-color: #fff; }
+.snd-btn span { font-size: .72rem; }
+.settings-body hr { border: 0; border-top: 1px solid var(--line); margin: 2px 0; width: 100%; }
 .menu-btn { display: none; margin-left: auto; background: none; border: 0; color: #fff; font-size: 1.6rem; cursor: pointer; }
 
 @media (max-width: 860px) {
-  .menu-btn { display: block; }
+  .menu-btn { display: block; margin-left: 4px; order: 4; }
+  .sound-ctrl { margin-left: auto; }
+  .snd-btn span { display: none; }
   .nav {
     display: none; position: absolute; top: 100%; left: 0; right: 0;
     flex-direction: column; background: var(--header); padding: 8px 16px 16px;
@@ -264,7 +275,7 @@ input[type="range"] { width: 100%; accent-color: var(--primary); }
 .settings-body {
   clear: both; margin-bottom: 8px; width: 260px; background: var(--surface); border-radius: var(--radius);
   padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 10px;
-  position: absolute; bottom: 48px; right: 0;
+  position: absolute; bottom: 48px; right: 0; max-height: calc(100vh - 140px); overflow-y: auto;
 }
 .settings-body[hidden] { display: none; }
 .settings-body label { display: flex; flex-direction: column; gap: 2px; font-size: .85rem; font-weight: 600; }
