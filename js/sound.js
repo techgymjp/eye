@@ -97,17 +97,17 @@
   // ---------------- BGM（ジェネレーティブ・アンビエント） ----------------
   const TRACKS = {
     calm: {
-      name: 'やすらぎ', bar: 8,
+      name: 'やすらぎ', en: 'Serenity', bar: 8,
       chords: [[48, 55, 64, 71], [45, 52, 60, 67], [41, 48, 57, 64], [43, 50, 59, 62]],
       scale: [72, 74, 76, 79, 81, 84, 86, 88], wave: 'triangle', cutoff: 1100, bellRate: 0.55, bellType: 'sine'
     },
     forest: {
-      name: '森の朝', bar: 6,
+      name: '森の朝', en: 'Forest Morning', bar: 6,
       chords: [[50, 57, 62, 66], [47, 54, 59, 62], [43, 50, 55, 59], [45, 52, 57, 61]],
       scale: [74, 76, 78, 81, 83, 86, 88, 90], wave: 'sine', cutoff: 1600, bellRate: 0.8, bellType: 'triangle', birds: true
     },
     space: {
-      name: '宇宙遊泳', bar: 10,
+      name: '宇宙遊泳', en: 'Space Walk', bar: 10,
       chords: [[38, 45, 52, 57], [36, 43, 50, 55], [41, 48, 53, 60], [34, 41, 48, 53]],
       scale: [69, 72, 74, 76, 79, 81, 84], wave: 'sawtooth', cutoff: 700, bellRate: 0.35, bellType: 'sine'
     }

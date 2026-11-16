@@ -32,21 +32,21 @@
   }
 
   const PATTERNS = {
-    jewel: { name: 'カラフル図形', tiled: true },
-    rainbow: { name: 'レインボー糸', tiled: true },
-    scribble: { name: 'パステル落書き', tiled: true },
-    stained: { name: 'ステンドグラス', tiled: true },
-    neon: { name: 'ネオン', tiled: true },
-    candy: { name: 'キャンディ', tiled: true },
-    flowers: { name: '花畑', tiled: true },
-    marble: { name: 'マーブル', tiled: true },
-    bw: { name: 'ランダムドット（白黒）', tiled: false },
-    color: { name: 'カラードット', tiled: false },
-    pastel: { name: 'パステルドット', tiled: false },
-    ocean: { name: 'オーシャン', tiled: false },
-    bubbles: { name: 'バブル模様', tiled: true },
-    mosaic: { name: 'モザイク', tiled: true },
-    leaves: { name: 'フォレスト', tiled: true }
+    jewel: { name: 'カラフル図形', en: 'Colorful Shapes', tiled: true },
+    rainbow: { name: 'レインボー糸', en: 'Rainbow Threads', tiled: true },
+    scribble: { name: 'パステル落書き', en: 'Pastel Scribbles', tiled: true },
+    stained: { name: 'ステンドグラス', en: 'Stained Glass', tiled: true },
+    neon: { name: 'ネオン', en: 'Neon', tiled: true },
+    candy: { name: 'キャンディ', en: 'Candy', tiled: true },
+    flowers: { name: '花畑', en: 'Flower Field', tiled: true },
+    marble: { name: 'マーブル', en: 'Marble', tiled: true },
+    bw: { name: 'ランダムドット（白黒）', en: 'Random Dots (B&W)', tiled: false },
+    color: { name: 'カラードット', en: 'Color Dots', tiled: false },
+    pastel: { name: 'パステルドット', en: 'Pastel Dots', tiled: false },
+    ocean: { name: 'オーシャン', en: 'Ocean', tiled: false },
+    bubbles: { name: 'バブル模様', en: 'Bubbles', tiled: true },
+    mosaic: { name: 'モザイク', en: 'Mosaic', tiled: true },
+    leaves: { name: 'フォレスト', en: 'Forest', tiled: true }
   };
 
   /**

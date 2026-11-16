@@ -3,6 +3,8 @@
 
   const $ = (id) => document.getElementById(id);
   const DM = window.DepthMaps;
+  const L = window.I18N;
+  const nm = (o) => L.name(o);
   const ST = window.Stereo;
 
   // ---------------- 保存ユーティリティ ----------------
@@ -159,7 +161,7 @@
     const sel = $('setPattern');
     Object.keys(ST.PATTERNS).forEach(k => {
       const o = document.createElement('option');
-      o.value = k; o.textContent = ST.PATTERNS[k].name; sel.appendChild(o);
+      o.value = k; o.textContent = nm(ST.PATTERNS[k]); sel.appendChild(o);
     });
     function sync() {
       $('setMode').value = settings.mode;
@@ -198,13 +200,13 @@
   (function initSound() {
     const sel = $('setTrack');
     Object.keys(SND.TRACKS).forEach(k => {
-      const o = document.createElement('option'); o.value = k; o.textContent = SND.TRACKS[k].name; sel.appendChild(o);
+      const o = document.createElement('option'); o.value = k; o.textContent = nm(SND.TRACKS[k]); sel.appendChild(o);
     });
     function sync(st) {
       $('bgmBtn').setAttribute('aria-pressed', String(st.bgm));
       $('sfxBtn').setAttribute('aria-pressed', String(st.sfx));
-      $('bgmBtn').title = st.bgm ? 'BGMを止める' : 'BGMを流す';
-      $('sfxBtn').title = st.sfx ? '効果音をオフ' : '効果音をオン';
+      $('bgmBtn').title = L.t(st.bgm ? 'bgm.stop' : 'bgm.play');
+      $('sfxBtn').title = L.t(st.sfx ? 'sfx.off' : 'sfx.on');
       $('sfxBtn').firstChild.textContent = st.sfx ? '🔊' : '🔇';
       sel.value = st.track;
       $('setBgmVol').value = st.bgmVol;
@@ -261,9 +263,9 @@
     const shape = galleryShape();
     if (!shape) return;
     renderStereo($('galleryCanvas'), shape);
-    $('galleryTitle').textContent = '「' + shape.name + '」';
+    $('galleryTitle').textContent = L.t('quote', nm(shape));
     showDepthOverlay($('galleryDepth'), shape, $('galleryCanvas'), gallery.reveal);
-    $('galleryReveal').textContent = gallery.reveal ? '答えを隠す' : '答えを見る';
+    $('galleryReveal').textContent = L.t(gallery.reveal ? 'reveal.hide' : 'reveal.show');
     document.querySelectorAll('#galleryThumbs .thumb').forEach((t, i) => t.classList.toggle('active', i === gallery.index));
   };
 
@@ -277,7 +279,7 @@
       const c = document.createElement('canvas');
       b.appendChild(c);
       const s = document.createElement('span');
-      s.textContent = shape.name;
+      s.textContent = nm(shape);
       b.appendChild(s);
       b.addEventListener('click', () => { gallery.index = i; gallery.reveal = false; rerender.gallery(); scrollToStage('galleryStage'); });
       wrap.appendChild(b);
@@ -294,7 +296,7 @@
 
   pageInit.gallery = () => {
     const tabs = $('galleryTabs');
-    const cats = DM.CATEGORIES.map(c => ({ id: c.id, name: c.name + '（' + c.items.length + '）' }));
+    const cats = DM.CATEGORIES.map(c => ({ id: c.id, name: L.t('cat.count', nm(c), c.items.length) }));
     cats.forEach(c => {
       const b = document.createElement('button');
       b.textContent = c.name; b.dataset.cat = c.id; b.type = 'button';
@@ -336,7 +338,7 @@
     $('galleryDownload').addEventListener('click', () => {
       const c = $('galleryCanvas');
       const a = document.createElement('a');
-      a.download = 'stereogram-' + galleryShape().name + '.png';
+      a.download = 'stereogram-' + nm(galleryShape()) + '.png';
       a.href = c.toDataURL('image/png');
       a.click();
     });
@@ -373,7 +375,7 @@
     const wrap = $('patternSwatches');
     Object.keys(ST.PATTERNS).forEach(k => {
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'swatch'; b.dataset.pattern = k; b.title = ST.PATTERNS[k].name;
+      b.type = 'button'; b.className = 'swatch'; b.dataset.pattern = k; b.title = nm(ST.PATTERNS[k]);
       const c = document.createElement('canvas');
       const S = 56;
       c.width = S; c.height = S;
@@ -382,7 +384,7 @@
       const out = new Uint32Array(img.data.buffer);
       for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) out[y * S + x] = pat.data[(y % pat.th) * pat.tw + (x % pat.tw)];
       c.getContext('2d').putImageData(img, 0, 0);
-      const label = document.createElement('span'); label.textContent = ST.PATTERNS[k].name;
+      const label = document.createElement('span'); label.textContent = nm(ST.PATTERNS[k]);
       b.append(c, label);
       b.addEventListener('click', () => {
         $('setPattern').value = k;
@@ -402,7 +404,7 @@
   function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
   function poolFor(set) {
-    if (set === 'mix') return [].concat(...['shape', 'number', 'kana', 'kanji'].map(id => DM.CATEGORIES.find(c => c.id === id).items));
+    if (set === 'mix') return [].concat(...(L.lang === 'en' ? ['shape', 'number', 'alpha'] : ['shape', 'number', 'kana', 'kanji']).map(id => DM.CATEGORIES.find(c => c.id === id).items));
     return DM.CATEGORIES.find(c => c.id === set).items;
   }
 
@@ -428,7 +430,7 @@
     box.innerHTML = '';
     opts.forEach(o => {
       const b = document.createElement('button');
-      b.type = 'button'; b.textContent = o.name; b.dataset.id = o.id; b.dataset.sfx = 'none';
+      b.type = 'button'; b.textContent = nm(o); b.dataset.id = o.id; b.dataset.sfx = 'none';
       b.addEventListener('click', () => answer(o, b));
       box.appendChild(b);
     });
@@ -450,7 +452,7 @@
     SND.play(ok ? 'correct' : 'wrong');
     const fb = $('trainFeedback');
     fb.className = 'feedback ' + (ok ? 'good' : 'bad');
-    fb.textContent = ok ? `正解！ ${secs.toFixed(1)}秒` : `答えは「${train.shape.name}」`;
+    fb.textContent = ok ? L.t('fb.ok', secs.toFixed(1)) : L.t('fb.ng', nm(train.shape));
     fb.hidden = false;
     showDepthOverlay($('trainDepth'), train.shape, $('trainCanvas'), !ok);
     clearTimeout(train.nextTimer);
@@ -496,10 +498,10 @@
     const avg = train.times.length ? (train.times.reduce((a, b) => a + b, 0) / train.times.length) : null;
     const acc = train.total ? Math.round(train.correct / train.total * 100) : 0;
     $('trainResultStats').innerHTML = [
-      ['トレーニング時間', fmt(elapsed)],
-      ['正解数', `${train.correct} / ${train.total}`],
-      ['正解率', acc + '%'],
-      ['見えるまでの平均', avg ? avg.toFixed(1) + '秒' : '—']
+      [L.t('res.time'), fmt(elapsed)],
+      [L.t('res.score'), `${train.correct} / ${train.total}`],
+      [L.t('res.acc'), acc + '%'],
+      [L.t('res.avg'), avg ? L.t('sec', avg.toFixed(1)) : '—']
     ].map(([k, v]) => `<div class="stat"><b>${v}</b><span>${k}</span></div>`).join('');
   }
   function resetTrainingUI() {
@@ -541,11 +543,11 @@
     const sum = (f) => days.reduce((a, k) => a + (rec[k][f] || 0), 0);
     const tot = sum('total'), cor = sum('correct'), tn = sum('timeN');
     $('recordStats').innerHTML = [
-      ['連続日数', streak(rec) + '日'],
-      ['合計時間', Math.round(sum('sec') / 60) + '分'],
-      ['トレーニング回数', sum('sessions') + '回'],
-      ['正解率', tot ? Math.round(cor / tot * 100) + '%' : '—'],
-      ['見えるまでの平均', tn ? (sum('timeSum') / tn).toFixed(1) + '秒' : '—']
+      [L.t('rec.streak'), L.t('days', streak(rec))],
+      [L.t('rec.total'), L.t('min', Math.round(sum('sec') / 60))],
+      [L.t('rec.sessions'), L.t('times', sum('sessions'))],
+      [L.t('res.acc'), tot ? Math.round(cor / tot * 100) + '%' : '—'],
+      [L.t('res.avg'), tn ? L.t('sec', (sum('timeSum') / tn).toFixed(1)) : '—']
     ].map(([k, v]) => `<div class="stat"><b>${v}</b><span>${k}</span></div>`).join('');
 
     const chart = $('recordChart');
@@ -559,14 +561,14 @@
       const bar = document.createElement('div');
       bar.className = 'bar';
       bar.style.height = (sec / max * 100) + '%';
-      bar.title = `${d.getMonth() + 1}/${d.getDate()} ${Math.round(sec / 60)}分`;
-      bar.innerHTML = `<small>${d.getMonth() + 1}/${d.getDate()}</small>${sec ? `<em>${Math.max(1, Math.round(sec / 60))}分</em>` : ''}`;
+      bar.title = `${d.getMonth() + 1}/${d.getDate()} ${L.t('min', Math.round(sec / 60))}`;
+      bar.innerHTML = `<small>${d.getMonth() + 1}/${d.getDate()}</small>${sec ? `<em>${L.t('min', Math.max(1, Math.round(sec / 60)))}</em>` : ''}`;
       if (!sec) bar.style.opacity = '.25';
       chart.appendChild(bar);
     });
 
     const cal = $('recordCalendar');
-    cal.innerHTML = '日月火水木金土'.split('').map(c => `<div class="head">${c}</div>`).join('');
+    cal.innerHTML = L.t('weekdays').map(c => `<div class="head">${c}</div>`).join('');
     const now = new Date();
     const first = new Date(now.getFullYear(), now.getMonth(), 1);
     const daysIn = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
@@ -579,7 +581,7 @@
   };
   pageEnter.record = rerender.record;
   $('recordReset').addEventListener('click', () => {
-    if (confirm('トレーニング記録をすべて削除しますか？')) { store.set('stereo.records', {}); rerender.record(); }
+    if (confirm(L.t('rec.confirm'))) { store.set('stereo.records', {}); rerender.record(); }
   });
 
   // ---------------- 遠近トレーニング ----------------
@@ -603,22 +605,22 @@
     if (motion === 'pulse') {
       const s = Math.sin(t * Math.PI / 3);
       amp = 0.12 + 0.88 * (0.5 + 0.5 * s);
-      msg = Math.cos(t * Math.PI / 3) > 0 ? '手前に近づいてくる…' : '奥へ遠ざかる…';
+      msg = L.t(Math.cos(t * Math.PI / 3) > 0 ? 'focus.near' : 'focus.far');
     } else if (motion === 'swing') {
       ox = Math.round(Math.sin(t * 0.9) * d.w * 0.28);
       amp = 0.75;
-      msg = '左右の動きを目で追いましょう';
+      msg = L.t('focus.swing');
     } else if (motion === 'orbit') {
       ox = Math.round(Math.cos(t * 0.8) * d.w * 0.25);
       oy = Math.round(Math.sin(t * 0.8) * d.h * 0.22);
       amp = 0.45 + 0.4 * (0.5 + 0.5 * Math.sin(t * 0.8));
-      msg = 'ぐるぐる回る立体を追いかけましょう';
+      msg = L.t('focus.orbit');
     } else {
       const cyc = (t / speed) % 8;
       const inhale = cyc < 4;
       const p = inhale ? cyc / 4 : 1 - (cyc - 4) / 4;
       amp = 0.1 + 0.9 * (0.5 - 0.5 * Math.cos(p * Math.PI));
-      msg = inhale ? '吸って… ' + (4 - Math.floor(cyc)) : '吐いて… ' + (8 - Math.floor(cyc));
+      msg = inhale ? L.t('focus.in', 4 - Math.floor(cyc)) : L.t('focus.out', 8 - Math.floor(cyc));
       if (focus.phase !== inhale) { focus.phase = inhale; SND.play(inhale ? 'breathIn' : 'breathOut'); }
     }
     const w = d.w, h = d.h;
@@ -642,12 +644,12 @@
   }
   function focusStart() {
     focus.running = true; focus.phase = null; focus.t0 = performance.now(); focus.last = 0; focus.logged = performance.now();
-    $('focusToggle').textContent = 'ストップ';
+    $('focusToggle').textContent = L.t('btn.stop');
     focus.raf = requestAnimationFrame(focusFrame);
   }
   function focusStop() {
     focus.running = false; cancelAnimationFrame(focus.raf);
-    $('focusToggle').textContent = 'スタート';
+    $('focusToggle').textContent = L.t('btn.start');
     $('focusMsg').textContent = '';
   }
   rerender.focus = () => {
@@ -688,12 +690,12 @@
     ill.index = (i + ILL.length) % ILL.length;
     ill.reveal = false; ill.t0 = performance.now();
     const item = ILL[ill.index];
-    $('illTitle').textContent = item.name;
-    $('illKind').textContent = item.kind;
-    $('illQ').textContent = item.q;
-    $('illA').textContent = item.a;
+    $('illTitle').textContent = L.name(item, 'name');
+    $('illKind').textContent = L.name(item, 'kind');
+    $('illQ').textContent = L.name(item, 'q');
+    $('illA').textContent = L.name(item, 'a');
     $('illA').hidden = true;
-    $('illReveal').textContent = '種明かし';
+    $('illReveal').textContent = L.t('ill.reveal');
     document.querySelectorAll('#illThumbs .thumb').forEach((t, k) => t.classList.toggle('active', k === ill.index));
     illDraw();
   }
@@ -707,7 +709,7 @@
       c.width = 240; c.height = 150;
       const ctx = c.getContext('2d');
       item.draw(ctx, 240, 150, { reveal: false, t: 0 });
-      const s = document.createElement('span'); s.textContent = item.name;
+      const s = document.createElement('span'); s.textContent = L.name(item, 'name');
       b.append(c, s);
       b.addEventListener('click', () => { illShow(i); scrollToStage('illStage'); });
       wrap.appendChild(b);
@@ -718,7 +720,7 @@
       ill.reveal = !ill.reveal;
       if (ill.reveal) SND.play('reveal');
       $('illA').hidden = !ill.reveal;
-      $('illReveal').textContent = ill.reveal ? '元に戻す' : '種明かし';
+      $('illReveal').textContent = L.t(ill.reveal ? 'ill.back' : 'ill.reveal');
       illDraw();
     });
   };
@@ -728,6 +730,11 @@
   // ---------------- 見方ガイド ----------------
   rerender.guide = () => renderStereo($('practiceCanvas'), DM.byId.circle, { ratio: 0.45, mu: 0.4, seed: 5 });
   pageEnter.guide = () => requestAnimationFrame(rerender.guide);
+
+  // ---------------- 言語切り替え ----------------
+  $('langLabel').textContent = L.t('lang.switch');
+  $('langShort').textContent = L.t('lang.short');
+  $('langBtn').addEventListener('click', () => L.setLang(L.lang === 'en' ? 'ja' : 'en'));
 
   // ---------------- 起動 ----------------
   go(location.hash.slice(1) || 'home');

@@ -15,7 +15,9 @@
 
   const LIST = [
     {
-      id: 'penrose', name: '不可能な三角形', kind: '不可能図形',
+      id: 'penrose', name: '不可能な三角形', kind: '不可能図形', nameEn: "Impossible Triangle", kindEn: "Impossible figure",
+      qEn: "Could this 3D triangle be built in real life?",
+      aEn: "Each corner on its own looks like a correct solid, but the whole shape cannot exist in reality — an “impossible figure”. In isometric projection, moving the same distance along X, Y and Z brings you back to the same spot on screen, so two distant corners appear to join.",
       q: 'この三角形の立体は、現実に作れるでしょうか？',
       a: '各角だけを見ると正しい立体ですが、全体としては現実には存在できない「不可能図形」です。等角投影では、X・Y・Z方向に同じだけ進むと画面上で元の位置に戻るため、遠く離れた2つの角がつながって見えます。',
       draw(ctx, w, h, st) {
@@ -56,13 +58,16 @@
           ctx.font = `bold ${Math.round(s * 0.55)}px sans-serif`;
           ctx.textAlign = 'center';
           const a = P(0.5, 0.5, 1.4), b = P(n + 0.5, n + 0.5, n - 0.3);
-          ctx.fillText('手前', a[0], a[1] - s * 0.3);
-          ctx.fillText('奥…のはず', b[0] + s * 1.6, b[1]);
+          ctx.fillText((window.I18N ? I18N.t : (k => k))('ill.near'), a[0], a[1] - s * 0.3);
+          ctx.textAlign = 'right';
+          ctx.fillText((window.I18N ? I18N.t : (k => k))('ill.far'), b[0] - s * 1.0, b[1] + s * 0.4);
         }
       }
     },
     {
-      id: 'muller', name: 'ミュラー・リヤー錯視', kind: '長さの錯視',
+      id: 'muller', name: 'ミュラー・リヤー錯視', kind: '長さの錯視', nameEn: "Müller-Lyer Illusion", kindEn: "Length illusion",
+      qEn: "Which horizontal line looks longer, top or bottom?",
+      aEn: "Both lines are exactly the same length. The direction of the arrow fins changes how we judge length.",
       q: '上と下の横線、どちらが長く見えますか？',
       a: '2本の横線はまったく同じ長さです。矢羽の向きによって、線の長さの判断が変わります。',
       draw(ctx, w, h, st) {
@@ -85,7 +90,9 @@
       }
     },
     {
-      id: 'ebbinghaus', name: 'エビングハウス錯視', kind: '大きさの錯視',
+      id: 'ebbinghaus', name: 'エビングハウス錯視', kind: '大きさの錯視', nameEn: "Ebbinghaus Illusion", kindEn: "Size illusion",
+      qEn: "Which orange center circle is bigger?",
+      aEn: "The two center circles are the same size. Surrounded by large circles one looks smaller; surrounded by small circles it looks bigger.",
       q: '中央のオレンジの円、どちらが大きいですか？',
       a: '中央の円は左右とも同じ大きさです。周りの円が大きいと小さく、小さいと大きく見えます。',
       draw(ctx, w, h, st) {
@@ -111,7 +118,9 @@
       }
     },
     {
-      id: 'cafewall', name: 'カフェウォール錯視', kind: '傾きの錯視',
+      id: 'cafewall', name: 'カフェウォール錯視', kind: '傾きの錯視', nameEn: "Café Wall Illusion", kindEn: "Tilt illusion",
+      qEn: "Do the gray horizontal lines look tilted?",
+      aEn: "All the horizontal lines are perfectly level and parallel. The offset black-and-white tiles combined with the thin gray lines make them look wedge-shaped.",
       q: '灰色の横線は傾いて見えますか？',
       a: '横線はすべて完全に水平・平行です。白黒タイルのずれと細い灰色の線の組み合わせで、くさび形に傾いて見えます。',
       draw(ctx, w, h, st) {
@@ -132,7 +141,9 @@
       }
     },
     {
-      id: 'scintillating', name: 'きらめき格子錯視', kind: '明るさの錯視',
+      id: 'scintillating', name: 'きらめき格子錯視', kind: '明るさの錯視', nameEn: "Scintillating Grid", kindEn: "Brightness illusion",
+      qEn: "Look at the white dots at the intersections. Do you see black dots?",
+      aEn: "All the dots are white. As you move your eyes, black dots flicker at the intersections you are not looking at directly. Lateral inhibition in the retina is thought to play a role.",
       q: '交差点の白い丸をよく見てください。黒い点が見えますか？',
       a: '交差点の丸はすべて白です。視線を動かすと、見ていない交差点に黒い点がチカチカ現れます。網膜の側抑制などが関係していると言われます。',
       draw(ctx, w, h, st) {
@@ -151,7 +162,9 @@
       }
     },
     {
-      id: 'rubin', name: 'ルビンの壺', kind: '多義図形',
+      id: 'rubin', name: 'ルビンの壺', kind: '多義図形', nameEn: "Rubin’s Vase", kindEn: "Ambiguous figure",
+      qEn: "Do you see a white vase, or two faces looking at each other?",
+      aEn: "The same picture can be seen as a vase or as two faces in profile. It is a classic example of figure–ground reversal.",
       q: '白い壺が見えますか？それとも向かい合う2人の顔？',
       a: '同じ絵が「壺」にも「向かい合った顔」にも見えます。図（主役）と地（背景）が入れ替わる「図地反転」の代表例です。',
       draw(ctx, w, h, st) {
@@ -173,7 +186,9 @@
       }
     },
     {
-      id: 'necker', name: 'ネッカーの立方体', kind: '多義図形',
+      id: 'necker', name: 'ネッカーの立方体', kind: '多義図形', nameEn: "Necker Cube", kindEn: "Ambiguous figure",
+      qEn: "Which face is in front? Keep looking…",
+      aEn: "Because the line drawing has no depth cues, either the lower-left or the upper-right face can look like the front, and they naturally flip every few seconds.",
       q: 'どちらの面が手前に見えますか？じっと見ていると…',
       a: '奥行きの手がかりがない線画なので、左下の面が手前にも、右上の面が手前にも見え、数秒ごとに自然に入れ替わります。',
       draw(ctx, w, h, st) {
@@ -190,7 +205,9 @@
       }
     },
     {
-      id: 'kanizsa', name: 'カニッツァの三角形', kind: '主観的輪郭',
+      id: 'kanizsa', name: 'カニッツァの三角形', kind: '主観的輪郭', nameEn: "Kanizsa Triangle", kindEn: "Illusory contour",
+      qEn: "Do you see a white triangle in the middle?",
+      aEn: "No outline of that triangle is drawn. From the arrangement of the notched circles and corners, your brain fills in an edge that is not there.",
       q: '中央に白い三角形が見えますか？',
       a: '三角形の輪郭線は描かれていません。欠けた円と角の配置から、脳が存在しない輪郭を補って「見て」います。',
       draw(ctx, w, h, st) {
@@ -220,7 +237,9 @@
       }
     },
     {
-      id: 'zollner', name: 'ツェルナー錯視', kind: '傾きの錯視',
+      id: 'zollner', name: 'ツェルナー錯視', kind: '傾きの錯視', nameEn: "Zöllner Illusion", kindEn: "Tilt illusion",
+      qEn: "Are the long diagonal lines parallel?",
+      aEn: "All the long lines are perfectly parallel. The short hatches alternate in direction, making neighboring lines seem to converge and diverge.",
       q: '長い斜めの線は平行ですか？',
       a: 'すべての長い線は完全に平行です。短い斜線が交互に向きを変えることで、隣同士が開いたり閉じたりして見えます。',
       draw(ctx, w, h, st) {
@@ -243,7 +262,9 @@
       }
     },
     {
-      id: 'contrast', name: '明るさの同時対比', kind: '明るさの錯視',
+      id: 'contrast', name: '明るさの同時対比', kind: '明るさの錯視', nameEn: "Simultaneous Contrast", kindEn: "Brightness illusion",
+      qEn: "Which of the two center squares is brighter?",
+      aEn: "The two squares are exactly the same gray. On a dark background it looks lighter; on a light background it looks darker.",
       q: '中央の2つの四角、どちらが明るいですか？',
       a: '2つの四角はまったく同じ灰色です。暗い背景の上では明るく、明るい背景の上では暗く見えます。',
       draw(ctx, w, h, st) {
@@ -258,7 +279,9 @@
       }
     },
     {
-      id: 'ponzo', name: 'ポンゾ錯視', kind: '大きさの錯視',
+      id: 'ponzo', name: 'ポンゾ錯視', kind: '大きさの錯視', nameEn: "Ponzo Illusion", kindEn: "Size illusion",
+      qEn: "Which of the two yellow bars is longer?",
+      aEn: "They are the same length. The railway-like perspective makes your brain assume the upper bar is farther away — and therefore bigger.",
       q: '2本の黄色い棒、どちらが長いですか？',
       a: '2本は同じ長さです。線路のような遠近の手がかりで、上の棒が「遠くにある＝本当は大きい」と脳が補正してしまいます。',
       draw(ctx, w, h, st) {
@@ -283,7 +306,9 @@
       }
     },
     {
-      id: 'fraser', name: 'フレーザーの渦巻き', kind: '形の錯視',
+      id: 'fraser', name: 'フレーザーの渦巻き', kind: '形の錯視', nameEn: "Fraser Spiral", kindEn: "Shape illusion",
+      qEn: "Does it look like a spiral?",
+      aEn: "It is not a spiral — just overlapping concentric circles. The twisted-cord pattern misleads your sense of line direction.",
       q: '渦巻きに見えますか？',
       a: '実は渦巻きではなく、同心円が重なっているだけです。ねじれた縞模様が線の向きの判断を狂わせます。',
       draw(ctx, w, h, st) {
@@ -320,7 +345,9 @@
       }
     },
     {
-      id: 'drift', name: '周辺ドリフト錯視', kind: '動きの錯視',
+      id: 'drift', name: '周辺ドリフト錯視', kind: '動きの錯視', nameEn: "Peripheral Drift Illusion", kindEn: "Motion illusion",
+      qEn: "It is a still image, yet don’t the circles seem to rotate slowly?",
+      aEn: "The image is completely still. The luminance sequence “black → dark → white → light” is processed as a motion signal when your eyes move. Staring at the center weakens the effect.",
       q: '静止画なのに、円がゆっくり回って見えませんか？',
       a: 'この絵は完全に止まっています。「黒→濃い灰→白→薄い灰」という明るさの並びが、視線を動かしたときに動きの信号として処理されます。中心を見つめると動きは弱まります。',
       draw(ctx, w, h, st) {
@@ -348,7 +375,9 @@
       }
     },
     {
-      id: 'jastrow', name: 'ジャストロー錯視', kind: '大きさの錯視',
+      id: 'jastrow', name: 'ジャストロー錯視', kind: '大きさの錯視', nameEn: "Jastrow Illusion", kindEn: "Size illusion",
+      qEn: "Which arc is bigger, top or bottom?",
+      aEn: "The two arcs are exactly the same size. Comparing the short edge of one with the long edge of the other makes the lower one look bigger.",
       q: '上と下の扇形、どちらが大きいですか？',
       a: '2つの扇形はまったく同じ大きさです。並べたときの短い辺と長い辺の比較で、下が大きく見えます。',
       draw(ctx, w, h, st) {
@@ -370,7 +399,9 @@
       }
     },
     {
-      id: 'afterimage', name: '残像トリック', kind: '残像',
+      id: 'afterimage', name: '残像トリック', kind: '残像', nameEn: "Afterimage Trick", kindEn: "Afterimage",
+      qEn: "Stare at the center dot for 20 seconds, then press “Reveal”.",
+      aEn: "You should have seen the flag in its true colors (red, white and blue) on the white screen. Photoreceptors tired from one color respond less, so the opposite (complementary) color appears as an afterimage.",
       q: '中央の点を20秒見つめてから「種明かし」を押してください。',
       a: '白い画面に、本来の色（赤・白・青の旗）が浮かんで見えたはずです。同じ色を見続けて疲れた視細胞の反応が弱まり、反対の色（補色）の残像が現れます。',
       draw(ctx, w, h, st) {
@@ -392,7 +423,7 @@
         const remain = Math.max(0, 20 - Math.floor(st.t));
         ctx.font = `bold ${Math.round(h * 0.06)}px sans-serif`;
         ctx.textAlign = 'center';
-        ctx.fillText(remain > 0 ? `あと ${remain} 秒` : '「種明かし」を押してください', w / 2, h - h * 0.06);
+        ctx.fillText(remain > 0 ? (window.I18N ? I18N.t : (k => k))('ill.remain', remain) : (window.I18N ? I18N.t : (k => k))('ill.pressReveal'), w / 2, h - h * 0.06);
       },
       animated: true
     }

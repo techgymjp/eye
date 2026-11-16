@@ -59,7 +59,7 @@ h3 { font-size: 1.1rem; margin: 1.2rem 0 .5rem; }
 .logo i:first-child { left: 0; background: #3a7bd5; }
 .logo i:last-child { right: 0; background: rgba(232, 67, 58, .85); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
-.brand-text b { font-size: 1.05rem; letter-spacing: .04em; }
+.brand-text b { font-size: 1.05rem; letter-spacing: .04em; white-space: nowrap; }
 .brand-text small { font-size: .72rem; opacity: .8; letter-spacing: .2em; }
 .nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
 .nav a {
@@ -75,13 +75,18 @@ h3 { font-size: 1.1rem; margin: 1.2rem 0 .5rem; }
 }
 .snd-btn[aria-pressed="true"] { opacity: 1; background: rgba(255,255,255,.2); border-color: #fff; }
 .snd-btn span { font-size: .72rem; }
+.lang-btn { opacity: 1; white-space: nowrap; }
+.lang-short { display: none; font-size: .78rem; }
 .settings-body hr { border: 0; border-top: 1px solid var(--line); margin: 2px 0; width: 100%; }
 .menu-btn { display: none; margin-left: auto; background: none; border: 0; color: #fff; font-size: 1.6rem; cursor: pointer; }
 
-@media (max-width: 860px) {
+@media (max-width: 1080px) {
   .menu-btn { display: block; margin-left: 4px; order: 4; }
   .sound-ctrl { margin-left: auto; }
   .snd-btn span { display: none; }
+  .lang-btn .lang-short { display: inline; }
+  .brand-text b { font-size: .95rem; white-space: nowrap; }
+  .site-header { gap: 10px; padding: 10px 14px; }
   .nav {
     display: none; position: absolute; top: 100%; left: 0; right: 0;
     flex-direction: column; background: var(--header); padding: 8px 16px 16px;
