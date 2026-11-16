@@ -16,7 +16,7 @@
   };
 
   // ---------------- 表示設定 ----------------
-  const DEFAULTS = { mode: 'parallel', pattern: 'color', mu: 0.3, period: 96, dot: 1, dots: true };
+  const DEFAULTS = { mode: 'parallel', pattern: 'jewel', mu: 0.3, period: 96, dot: 1, dots: true };
   const settings = Object.assign({}, DEFAULTS, store.get('stereo.settings', {}));
   if (window.matchMedia('(max-width: 600px)').matches && !store.get('stereo.settings', null)) {
     settings.period = 76;
@@ -363,7 +363,37 @@
       buildGalleryThumbs(); rerender.gallery(); scrollToStage('galleryStage');
     }
   };
-  pageEnter.gallery = () => requestAnimationFrame(rerender.gallery);
+  pageEnter.gallery = () => { syncSwatches(); requestAnimationFrame(rerender.gallery); };
+
+  // 模様スウォッチ（ワンタップで模様を切り替え）
+  function syncSwatches() {
+    document.querySelectorAll('#patternSwatches .swatch').forEach(b => b.classList.toggle('active', b.dataset.pattern === settings.pattern));
+  }
+  (function initSwatches() {
+    const wrap = $('patternSwatches');
+    Object.keys(ST.PATTERNS).forEach(k => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'swatch'; b.dataset.pattern = k; b.title = ST.PATTERNS[k].name;
+      const c = document.createElement('canvas');
+      const S = 56;
+      c.width = S; c.height = S;
+      const pat = ST.makePattern(k, S, S, S, 7);
+      const img = new ImageData(S, S);
+      const out = new Uint32Array(img.data.buffer);
+      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) out[y * S + x] = pat.data[(y % pat.th) * pat.tw + (x % pat.tw)];
+      c.getContext('2d').putImageData(img, 0, 0);
+      const label = document.createElement('span'); label.textContent = ST.PATTERNS[k].name;
+      b.append(c, label);
+      b.addEventListener('click', () => {
+        $('setPattern').value = k;
+        $('setPattern').dispatchEvent(new Event('change'));
+        syncSwatches();
+      });
+      wrap.appendChild(b);
+    });
+    $('setPattern').addEventListener('change', syncSwatches);
+    syncSwatches();
+  })();
 
   // ---------------- トレーニング ----------------
   const MU_LEVEL = { easy: 0.42, normal: 0.3, hard: 0.18 };
