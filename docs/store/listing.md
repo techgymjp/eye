@@ -60,7 +60,7 @@
 
 **Short description** (max 80)
 
-Relax your eyes with stereograms and illusions. Watch pictures pop out in 3D!
+Relax your eyes with stereograms and optical illusions. Watch art pop out in 3D!
 
 **Full description**
 
