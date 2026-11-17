@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0} #c{position:relative;width:1024px;height:500px;overflow:hidden;font-family:"Hiragino Sans","Noto Sans JP","Noto Sans CJK JP",sans-serif}
+canvas{position:absolute;left:0;top:0}
+.panel{position:absolute;right:0;top:0;bottom:0;width:520px;background:linear-gradient(90deg,rgba(14,28,49,0) 0%,rgba(14,28,49,.55) 14%,rgba(14,28,49,.9) 30%,#0e1c31 48%);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 28px 0 128px;box-sizing:border-box}
+.logo{width:96px;height:96px;border-radius:22px;margin-bottom:18px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+h1{margin:0;white-space:nowrap;font-size:40px;line-height:1.15;font-weight:900;letter-spacing:.02em}
+h1 small{display:block;font-size:24px;font-weight:700;opacity:.85;margin-top:6px;letter-spacing:.12em}
+p{margin:16px 0 0;white-space:nowrap;font-size:19px;font-weight:700;color:#ffd34d}
+</style></head><body><div id="c"><canvas id="s"></canvas>
+<div class="panel"><img class="logo" src="icon.png"><h1 id="t"></h1><p id="sub"></p></div></div>
+<script src="js/stereogram.js"></script><script src="js/depthmaps.js"></script>
+<script>
+const lang = new URLSearchParams(location.search).get('l');
+document.getElementById('t').innerHTML = lang === 'en' ? '3D Eye Training<small>STEREOGRAMS</small>' : '3D視力回復<small>ステレオグラム</small>';
+document.getElementById('sub').textContent = lang === 'en' ? 'Watch pictures pop out in 3D!' : '見つめると、絵が立体に浮かび上がる！';
+const w = 1024, h = 500, period = 92;
+const depth = DepthMaps.build(DepthMaps.byId['a-hearts'], w, h, { region: 0.55 });
+// 右側（文字の下）は平らにする
+const pat = Stereo.makePattern('jewel', w, h, period, 3);
+Stereo.drawToCanvas(document.getElementById('s'), depth, w, h, { period, mu: 0.3, dotSize: 1 }, pat);
+</script></body></html>

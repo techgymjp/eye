@@ -72,7 +72,7 @@ Android アプリでのみ広告を表示します（Web 版には広告は出�
 
 - やり直しの案内と広告の間は、トレーニングのタイマーを止めます。
 - EU・英国など同意が必要な地域では、初回起動時に Google の同意確認画面が出ます。その地域では、ホームの「広告の設定」から同意内容をいつでも変更できます。
-- 広告ユニット ID は `js/ads.js`、AdMob のアプリ ID は `android/app/src/main/res/values/strings.xml` にあります。本番の ID が空の種類は、Google Play 用のビルドでは出しません（現在は AdMob のアプリ ID も Google 公式のテスト用 ID を入れてあります）。
+- 広告ユニット ID は `js/ads.js`、AdMob のアプリ ID は `android/app/src/main/res/values/strings.xml` にあります。本番の ID が空の種類は、Google Play 用のビルドでは出しません（現在はバナー・インタースティシャル・リワードとも本番の ID を設定済み）。
 - Google Play 用の .aab をビルドするときだけ、CI が `ADMOB_MODE=production` で本番の広告に切り替えます。
 - 本番の広告を自分でタップするとアカウント停止の対象になるので注意してください。
 

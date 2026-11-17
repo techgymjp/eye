@@ -342,3 +342,17 @@ body.ad-banner .settings { bottom: 66px; }
 @media (max-width: 760px) {
   body.ad-banner .settings-body { bottom: 62px; max-height: calc(72vh - 50px); }
 }
+/* 幅の狭いスマホ（360px など）：ヘッダーとトレーニングの表示を詰める */
+@media (max-width: 400px) {
+  .site-header { gap: 6px; padding: 8px 10px; }
+  .brand { gap: 7px; }
+  .logo { width: 32px; }
+  .logo i { width: 17px; height: 17px; }
+  .brand-text b { font-size: .88rem; letter-spacing: 0; }
+  .brand-text small { display: none; }
+  .sound-ctrl { gap: 4px; }
+  .snd-btn { padding: 4px 8px; }
+  .menu-btn { font-size: 1.4rem; margin-left: 2px; }
+  .train-hud { gap: 10px; font-size: .9rem; padding: 8px 10px; }
+  .train-hud b { font-size: 1.05rem; }
+}
