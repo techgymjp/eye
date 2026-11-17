@@ -38,6 +38,8 @@ python3 -m http.server 8000
 
 ## Android アプリ
 
+Google Play で公開中です：https://play.google.com/store/apps/details?id=jp.techgym.eye
+
 パッケージ名は `jp.techgym.eye` です（Google Play に一度公開すると変更できません）。
 [Capacitor](https://capacitorjs.com/) で Web 版のファイルをアプリ内に同梱しているため、ネットにつながっていなくても使えます（広告の読み込みを除く）。
 
@@ -47,7 +49,7 @@ python3 -m http.server 8000
 - 別のアプリに切り替えると、音が止まり、トレーニングのタイマーも止まる
 - 結果の「シェア」は Android の共有メニューから LINE や X などを選べる（コラム記事へのリンク付き）
 - ホームにビルド番号とプライバシーポリシーへのリンクを表示（EU など同意が必要な地域では「広告の設定」も）
-- アプリでは、Web 版だけの機能（ギャラリーの画像保存）を `npm run build:app` で取り除く
+- アプリでは、Web 版だけの要素（ギャラリーの画像保存、ホームの Google Play へのリンク）を `npm run build:app` で取り除く
 
 ### 動作確認用 APK
 

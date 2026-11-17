@@ -356,3 +356,12 @@ body.ad-banner .settings { bottom: 66px; }
   .train-hud { gap: 10px; font-size: .9rem; padding: 8px 10px; }
   .train-hud b { font-size: 1.05rem; }
 }
+/* web-only:start */
+.store-link { text-align: center; margin: 22px 0 0; }
+.store-link a {
+  display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: 999px;
+  background: #1a1a1a; color: #fff; text-decoration: none; font-weight: 700; box-shadow: var(--shadow);
+}
+.store-link a:hover { background: #333; }
+.store-ico { color: #34d399; font-size: .95rem; }
+/* web-only:end */

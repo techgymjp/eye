@@ -99,7 +99,10 @@
     'footer': '3D Eye Training Stereograms — gentle on your eyes, a little every day.',
     'btn.share': 'Share result', 'btn.home': 'Back to Home',
     'retry.q': 'Try this one again?', 'retry.watch': 'Watch an ad to retry', 'retry.no': 'Show answer',
-    'legal.privacy': 'Privacy Policy', 'legal.adSettings': 'Ad settings'
+    'legal.privacy': 'Privacy Policy', 'legal.adSettings': 'Ad settings',
+    // web-only:start
+    'store.android': 'Android app (Google Play)',
+    // web-only:end
   };
 
   // ---------- JSで生成するテキスト ----------
