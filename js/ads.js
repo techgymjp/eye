@@ -13,7 +13,7 @@ window.Ads = (() => {
       // 本番の広告ユニット（AdMob の Android アプリ「3D視力回復」）
       production: {
         interstitial: 'ca-app-pub-6411535997477460/7192462752',
-        rewarded: 'ca-app-pub-6411535997477460/6647140025',
+        rewarded: 'ca-app-pub-6411535997477460/6231956064',
         banner: 'ca-app-pub-6411535997477460/1393341163',
       },
     },
